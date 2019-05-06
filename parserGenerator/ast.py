@@ -11,6 +11,9 @@ class Grammar(Node):
     def __init__(self,syntax=[]):
         self.syntax = syntax
 
+    def __repr__(self):
+        print()
+
 class Syntax(Node):
     def __init__(self,syntaxRules=[]):
         self.syntaxRules = syntaxRules
@@ -71,12 +74,22 @@ class GroupedSeq(Node):
         self.definitions = definitions
 
 class SpecialSeq(Node):
-    def __init__(self,definitions=[]):
-        self.definitions = definitions
+    def __init__(self,value=''):
+        self.value = value
 
 class TerminalString(Node):
     def __init__(self,value=''):
         self.value = value
+
+class TerminalStringSQuote(TerminalString):
+    def __init__(self,value=''):
+        super().__init__(value)
+        self.separator = '\"'
+
+class TerminalStringFQuote(TerminalString):
+    def __init__(self,value=''):
+        super().__init__(value)
+        self.separator = '\''
 
 class Identifier(Node):
     def __init__(self,value=''):
@@ -84,7 +97,8 @@ class Identifier(Node):
 
 class Empty(Node):
     def __init__(self):
-        
+        pass
+
 class Integer(Node):
     def __init__(self,value=0):
         self.value = value

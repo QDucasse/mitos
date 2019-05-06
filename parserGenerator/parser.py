@@ -1,4 +1,5 @@
 import sys
+from ast    import *
 from indent import Indent
 from colors import Colors
 
@@ -92,14 +93,16 @@ class Parser:
         self.tokens = tokens
         #print(self.tokens)
         self.tokens = self.remove_comments()
-        self.parseGrammar()
+        grammar = self.parseGrammar()
+        print(grammar)
 
     def parseGrammar(self):
         '''
         Root of the program, beginning of the parsing
         '''
         self.indentator.indent('Parsing Grammar')
-        self.parseSyntax()
+        syntax  = self.parseSyntax()
+        grammar = Grammar(syntax)
         self.indentator.dedent()
         if (self.errors == 1):
             print('WARNING: 1 error found!')
@@ -107,6 +110,7 @@ class Parser:
             print('WARNING: ' + str(self.errors) + ' errors found!')
         else:
             print('parser: syntax analysis successful!')
+        return grammar
 
     def parseSyntax(self):
         '''
@@ -114,9 +118,12 @@ class Parser:
         Syntax = SyntaxRule, {SyntaxRule};
         '''
         self.indentator.indent('Parsing Syntax')
+        syntax = Syntax()
         while (len(self.tokens)>0):
-            self.parseSyntaxRule()
+            syntaxRule = self.parseSyntaxRule()
+            syntax.syntaxRules.append(syntaxRule)
         self.indentator.dedent()
+        return syntax
 
     def parseSyntaxRule(self):
         '''
@@ -124,35 +131,44 @@ class Parser:
         SyntaxRule = Identifier, '=', Definitions, ';';  //EBNF
         '''
         self.indentator.indent('Parsing Syntax Rule')
-        self.parseIdentifier()
+        identifier  = self.parseIdentifier()
         self.expect('ASSIGN')
-        self.parseDefinitions()
+        definitions = self.parseDefinitions()
         self.expect('TERMINATOR')
+        syntaxRule = SyntaxRule(identifier,definitions)
         self.indentator.dedent()
+        return syntaxRule
 
     def parseDefinitions(self):
         '''
         Parses definitions:
         Definitions = Definition, {'|', Definition};  //EBNF
         '''
+        definitions = Definitions()
         self.indentator.indent('Parsing Definitions')
         self.parseDefinition()
         while(self.show_next().kind == 'SEPARATOR'):
             self.expect('SEPARATOR')
-            self.parseDefinition()
+            definition = self.parseDefinition()
+            definitions.definitions.append(definition)
         self.indentator.dedent()
+        return definitions
 
     def parseDefinition(self):
         '''
         Parses a definition:
         Definition = Term, {',', Term};  //EBNF
         '''
+        definition = Definition()
         self.indentator.indent('Parsing Definition')
-        self.parseTerm()
+        mainTerm = self.parseTerm()
+        definition.terms.append(mainTerm)
         while(self.show_next().kind == 'CONCATENATION'):
             self.expect('CONCATENATION')
-            self.parseTerm()
+            otherTerm=self.parseTerm()
+            definition.terms.append(otherTerm)
         self.indentator.dedent()
+        return definition
 
     def parseTerm(self):
         '''
@@ -160,11 +176,14 @@ class Parser:
         Term = Factor, ['-', Exception];  //EBNF
         '''
         self.indentator.indent('Parsing Term')
-        self.parseFactor()
+        factor    = self.parseFactor()
+        exception = None
         if self.show_next().kind == 'EXCEPT':
             self.expect('EXCEPT')
-            self.parseException()
+            exception = self.parseException()
+        term = Term(factor,exception)
         self.indentator.dedent()
+        return term
 
     def parseException(self):
         '''
@@ -172,8 +191,10 @@ class Parser:
         Exception = Factor;  //EBNF
         '''
         self.indentator.indent('Parsing Exception')
-        self.parseFactor()
+        factor = self.parseFactor()
+        exception = Exception(factor)
         self.indentator.dedent()
+        return exception
 
     def parseFactor(self):
         '''
@@ -181,10 +202,12 @@ class Parser:
         Factor = [Integer, '*'], Primary; //EBNF
         '''
         self.indentator.indent('Parsing Factor')
+        integer = 0
         if self.show_next().kind == 'DIGIT':
-            self.parseInteger()
+            integer = self.parseInteger()
             self.expect('REPETITION')
-        self.parsePrimary()
+        primary = self.parsePrimary()
+        factor = Factor(integer,primary)
         self.indentator.dedent()
 
     def parsePrimary(self):
@@ -198,22 +221,32 @@ class Parser:
                 | Identifier
                 | Empty;            //EBNF
         '''
+        optionalSeq    = None
+        repeatedSeq    = None
+        groupedSeq     = None
+        specialSeq     = None
+        terminalString = None
+        identifier     = None
+        empty          = None
         self.indentator.indent('Parsing Primary')
         if self.show_next().kind   == 'LBRACKET':
-            self.parseOptionalSeq()
+            optionalSeq = self.parseOptionalSeq()
         elif self.show_next().kind == 'LBRACE':
-            self.parseRepeatedSeq()
+            repeatedSeq = self.parseRepeatedSeq()
         elif self.show_next().kind == 'LPAREN':
-            self.parseGroupedSeq()
+            groupedSeq = self.parseGroupedSeq()
         elif self.show_next().kind == 'SPECIAL':
-            self.parseSpecial()
+            specialSeq = self.parseSpecial()
         elif self.show_next().kind in Parser.TERMINAL_STRING:
-            self.parseTerminalString()
+            terminalString = self.parseTerminalString()
         elif self.show_next().kind == 'IDENTIFIER':
-            self.parseIdentifier()
+            identifier = self.parseIdentifier()
         else:
-            self.parseEmpty()
+            empty = self.parseEmpty()
+        primary = Primary(optionalSeq,repeatedSeq,groupedSeq,
+                          specialSeq,terminalString,identifier,empty)
         self.indentator.dedent()
+        return primary
 
     def parseOptionalSeq(self):
         '''
@@ -222,8 +255,9 @@ class Parser:
         '''
         self.indentator.indent('Parsing Optional Sequence')
         self.expect('LBRACKET')
-        self.parseDefinitions()
+        definitions = self.parseDefinitions()
         self.expect('RBRACKET')
+        optionalSeq = OptionalSeq(definitions)
         self.indentator.dedent()
 
     def parseRepeatedSeq(self):
@@ -233,8 +267,9 @@ class Parser:
         '''
         self.indentator.indent('Parsing Repeated Sequence')
         self.expect('LBRACE')
-        self.parseDefinitions()
+        definitions = self.parseDefinitions()
         self.expect('RBRACE')
+        repeatedSeq = RepeatedSeq(definitions)
         self.indentator.dedent()
 
     def parseGroupedSeq(self):
@@ -244,8 +279,9 @@ class Parser:
         '''
         self.indentator.indent('Parsing Grouped Sequence')
         self.expect('LPAREN')
-        self.parseDefinitions()
+        definitions = self.parseDefinitions()
         self.expect('RPAREN')
+        groupedSeq = GroupedSeq(definitions)
         self.indentator.dedent()
 
     def parseSpecialSeq(self):
@@ -254,8 +290,11 @@ class Parser:
         SpecialSeq = '?', {Character - '?'}, '?';  //EBNF
         '''
         self.indentator.indent('Parsing Special Sequence')
-        self.expect('SPECIAL')
+        token = self.expect('SPECIAL')
+        value = token.value
+        specialSeq = SpecialSeq(value)
         self.indentator.dedent()
+        return specialSeq
 
     def parseTerminalString(self):
         '''
@@ -265,10 +304,15 @@ class Parser:
         '''
         self.indentator.indent('Parsing Terminal String')
         if self.show_next().kind == 'FQUOTE':
-            self.expect('FQUOTE')
+            token = self.expect('FQUOTE')
+            value = token.value
+            terminalString = TerminalStringFQuote(value)
         elif self.show_next().kind == 'SQUOTE':
-            self.expect('SQUOTE')
+            token = self.expect('SQUOTE')
+            value = token.value
+            terminalString = TerminalStringSQuote(value)
         self.indentator.dedent()
+        return terminalString
 
     def parseIdentifier(self):
         '''
@@ -276,7 +320,9 @@ class Parser:
         Identifier = Letter, {Letter | Digit};  //EBNF
         '''
         self.indentator.indent('Parsing Identifier')
-        self.expect('IDENTIFIER')
+        token = self.expect('IDENTIFIER')
+        value = token.value
+        identifier = Identifier(value)
         self.indentator.dedent()
 
     def parseEmpty(self):
@@ -285,7 +331,9 @@ class Parser:
         Empty = ;  //EBNF
         '''
         self.indentator.indent('Parsing Empty')
+        empty = Empty()
         self.indentator.dedent()
+        return empty
 
     def parseInteger(self):
         '''
@@ -293,5 +341,8 @@ class Parser:
         Integer = Digit, {Digit};  //EBNF
         '''
         self.indentator.indent('Parsing Integer')
-        self.expect('INTEGER')
+        token = self.expect('INTEGER')
+        value = token.value
+        integer = Integer(value)
         self.indentator.dedent()
+        return Integer
