@@ -12,7 +12,9 @@ class Grammar(Node):
         self.syntax = syntax
 
     def __repr__(self):
-        print()
+        string = "Grammar - "
+        string += str(self.syntax)
+        return string
 
 class Syntax(Node):
     def __init__(self,syntaxRules=[]):
@@ -21,7 +23,7 @@ class Syntax(Node):
     def __repr__(self):
         string = "Syntax - "
         for syntaxRule in self.syntaxRules:
-            string += str(syntaxRule) + '\n'
+            string += str(syntaxRule)
         return string
 
 
@@ -31,8 +33,8 @@ class SyntaxRule(Node):
         self.definitions = definitions
 
     def __repr__(self):
-        string = "Syntax Rule - {0}\n".format(self.identifier)
-        for definition in self.definitions:
+        string = "Syntax Rule - {0}".format(self.identifier)
+        for definition in self.definitions.definitions:
             string += str(definition) + '\n'
         return string
 
@@ -42,8 +44,8 @@ class Definitions(Node):
 
     def __repr__(self):
         string = "Definitions - "
-        for definition in sefl.definitions:
-            string += str(definition) + '\n'
+        for definition in self.definitions:
+            string += str(definition)
         return string
 
 class Definition(Node):
@@ -52,8 +54,8 @@ class Definition(Node):
 
     def __repr__(self):
         string = "Definition - "
-        for term in terms:
-            string += str(term) + '\n'
+        for term in self.terms:
+            string += str(term)
         return string
 
 
@@ -66,6 +68,7 @@ class Term(Node):
         string = "Term - {0}".format(self.factor)
         if self.exception != None:
             string += '- {0}'.format(self.exception)
+        return string
 
 class Exception(Node):
     def __init__(self,factor=None):
@@ -113,7 +116,7 @@ class OptionalSeq(Node):
     def __repr__(self):
         string = "Optional Sequence - [ "
         for definition in definitions:
-            string += str(definition) + '\n'
+            string += str(definition)
         string += "]"
         return string
 
@@ -124,7 +127,7 @@ class RepeatedSeq(Node):
     def __repr__(self):
         string = "Repeated Sequence - { "
         for definition in definitions:
-            string += str(definition) + '\n'
+            string += str(definition)
         string += "}"
         return string
 
@@ -135,7 +138,7 @@ class GroupedSeq(Node):
     def __repr__(self):
         string = "Grouped Sequence - ( "
         for definition in definitions:
-            string += str(definition) + '\n'
+            string += str(definition)
         string += ")"
         return string
 
