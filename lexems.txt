@@ -1,0 +1,15 @@
+*         : repetition
+-         : absence
+,         : concatenation
+=         : definition
+;         : terminaison
+
+(* ... *) : commentaire  --------- \(\*[^(\*\))]*\*\) 
+ ? ... ?  : séquence spéciale ---- \?[^\?)]*\?    
+
+ [ ... ]  : groupe optionnel
+ ( ... )  : groupe
+ { ... }  : groupe répété
+ 
+
+

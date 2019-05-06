@@ -1,0 +1,44 @@
+
+Syntax      = SyntaxRule, {SyntaxRule};
+SyntaxRule  = Identifier, '=', Definitions, ';';
+(* A <syntax rule> defines the sequences of symbols represented by a <meta identifier> *)
+Definitions = Definition, {'|', Definition};
+(* | separates alternative <single definitions> *)
+Definition = Term, {',', Term};
+(* , separates successive <terms> *)
+Term = Factor, ['-', Exception];
+(* A <term> represents any sequence of symbols that is defined by the <factor> but not defined by the <exception> *)
+Exception = Factor;
+(* A <factor> may be used as an <exception> if it could be replaced by a <factor> containing no <meta identifiers> *)
+Factor = [Integer, '*'], Primary;
+(* The <integer> specifies the number of repetitions of the <primary> *)
+Primary = OptionalSeq
+        | RepeatedSeq
+        | GroupedSeq
+        | SpecialSeq
+        | TerminalString
+        | Identifier
+        | Empty;
+
+OptionalSeq = '[', Definitions, ']';
+(* The brackets enclose symbols which are optional *)
+RepeatedSeq = '{', Definitions, '}';
+(* The braces enclose symbols which may be repeated any number of times *)
+GroupedSeq = '(', Definitions, ')';
+(* The parenthesis allow any <definitions list> to be a <primary> *)
+SpecialSeq = '?', {Character - '?'}, '?';
+(* The meaning of a <special sequence> is not defined in the standard metalanguage *)
+TerminalString = "'", Character - "'", {Character - "'"}, "'"
+               | '"', Character - '"', {Character - '"'}, '"';
+(* A <terminal string> represents the <characters> between the quote symbols '...' or "..." *)
+Identifier = Letter, {Letter | Digit};
+(* A <meta identifier> is the name of a syntactic element of the language being defined *)
+Empty = ;
+
+Integer = Digit, {Digit};
+Comment = '\(\*', {CommentSymbol}, '\*\)';
+(* A comment is allowed anywhere outside a <terminal string>, <meta identifier>, <integer> or <special sequence> *)
+
+CommentSymbol = Comment | TerminalString
+                        | SpecialSeq
+                        | Character;
