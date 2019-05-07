@@ -3,7 +3,7 @@ import sys
 from token import Token
 
 regexExpressions = [
-    (r'\(\*[^(\*\))]*\*\)', 'COMMENT'),
+    (r'\(\*[\s\S]*?\*\)', 'COMMENT'),
     # Whitespaces
     (r'[ \n\t]+', None),
 

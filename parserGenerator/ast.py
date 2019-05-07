@@ -8,7 +8,7 @@ class Node():
 
 
 class Grammar(Node):
-    def __init__(self,syntax=[]):
+    def __init__(self,syntax=None):
         self.syntax = syntax
 
     def __repr__(self):
@@ -106,8 +106,23 @@ class Primary(Node):
         self.empty          = empty
 
     def __repr__(self):
-        pass
-        # For arguments, if not none --> print
+        string = 'Primary - '
+        if self.optionalSeq != None:
+            string += str(self.optionalSeq)
+        elif self.identifier != None:
+            string += str(self.identifier)
+        elif self.repeatedSeq != None:
+            string += str(self.repeatedSeq)
+        elif self.groupedSeq != None:
+            string += str(self.groupedSeq)
+        elif self.specialSeq != None:
+            string += str(self.specialSeq)
+        elif self.terminalString != None:
+            string += str(self.terminalString)
+        elif self.empty != None:
+            string += str(self.empty)
+        return string
+
 
 class OptionalSeq(Node):
     def __init__(self,definitions=[]):
@@ -126,7 +141,7 @@ class RepeatedSeq(Node):
 
     def __repr__(self):
         string = "Repeated Sequence - { "
-        for definition in definitions:
+        for definition in self.definitions.definitions:
             string += str(definition)
         string += "}"
         return string
@@ -163,7 +178,6 @@ class TerminalStringSQuote(TerminalString):
 
     def __repr__(self):
         return "Terminal String (S Quote) - {0}{1}{0}".format(self.separator,self.value)
-
 
 class TerminalStringFQuote(TerminalString):
     def __init__(self,value=''):

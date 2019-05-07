@@ -21,9 +21,9 @@ Primary = OptionalSeq
         | Empty;
 
 OptionalSeq = '[', Definitions, ']';
-(* The brackets enclose symbols which are optional *)
+(* The brackets [ and ] enclose symbols which are optional *)
 RepeatedSeq = '{', Definitions, '}';
-(* The braces enclose symbols which may be repeated any number of times *)
+(* The braces { and } enclose symbols which may be repeated any number of times *)
 GroupedSeq = '(', Definitions, ')';
 (* The parenthesis allow any <definitions list> to be a <primary> *)
 SpecialSeq = '?', {Character - '?'}, '?';

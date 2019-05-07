@@ -209,6 +209,7 @@ class Parser:
         primary = self.parsePrimary()
         factor = Factor(integer,primary)
         self.indentator.dedent()
+        return factor
 
     def parsePrimary(self):
         '''
@@ -259,6 +260,7 @@ class Parser:
         self.expect('RBRACKET')
         optionalSeq = OptionalSeq(definitions)
         self.indentator.dedent()
+        return optionalSeq
 
     def parseRepeatedSeq(self):
         '''
@@ -271,6 +273,7 @@ class Parser:
         self.expect('RBRACE')
         repeatedSeq = RepeatedSeq(definitions)
         self.indentator.dedent()
+        return repeatedSeq
 
     def parseGroupedSeq(self):
         '''
@@ -283,6 +286,7 @@ class Parser:
         self.expect('RPAREN')
         groupedSeq = GroupedSeq(definitions)
         self.indentator.dedent()
+        return groupedSeq
 
     def parseSpecialSeq(self):
         '''
@@ -324,6 +328,7 @@ class Parser:
         value = token.value
         identifier = Identifier(value)
         self.indentator.dedent()
+        return identifier
 
     def parseEmpty(self):
         '''
@@ -345,4 +350,4 @@ class Parser:
         value = token.value
         integer = Integer(value)
         self.indentator.dedent()
-        return Integer
+        return integer
