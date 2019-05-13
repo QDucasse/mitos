@@ -1,4 +1,5 @@
 import sys
+import copy
 from ast    import *
 from indent import Indent
 from colors import Colors
@@ -153,13 +154,15 @@ class Parser:
         '''
         self.indentator.indent('Parsing Definitions')
         self.indentator.say(Colors.OKGREEN + 'New Definitions' +  Colors.ENDC)
-        definitions = Definitions()
-        self.parseDefinition()
+        definitionsToCopy = Definitions()
+        definitions = copy.deepcopy(definitionsToCopy)
+        mainDefinition = self.parseDefinition()
+        definitions.addDefinition(mainDefinition)
         while(self.show_next().kind == 'SEPARATOR'):
             self.expect('SEPARATOR')
-            definition = self.parseDefinition()
-            definitions.addDefinition(definition)
-        self.indentator.say(Colors.OKGREEN + 'End Definitions' +  Colors.ENDC + str(definitions.definitions))
+            otherDefinition = self.parseDefinition()
+            definitions.addDefinition(otherDefinition)
+        self.indentator.say(Colors.OKGREEN + 'End Definitions with values:' +  Colors.ENDC + str(definitions.definitions))
         self.indentator.dedent()
         return definitions
 
