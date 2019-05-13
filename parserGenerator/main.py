@@ -24,4 +24,4 @@ if __name__ == '__main__':
 
     verbose = True
     parser = Parser(verbose)
-    parser.parse(tokens)
+    print(parser.parse(tokens))

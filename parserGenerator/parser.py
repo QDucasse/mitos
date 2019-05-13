@@ -94,7 +94,7 @@ class Parser:
         #print(self.tokens)
         self.tokens = self.remove_comments()
         grammar = self.parseGrammar()
-        print(grammar)
+        return grammar
 
     def parseGrammar(self):
         '''
@@ -121,7 +121,7 @@ class Parser:
         syntax = Syntax()
         while (len(self.tokens)>0):
             syntaxRule = self.parseSyntaxRule()
-            syntax.syntaxRules.append(syntaxRule)
+            syntax.addRule(syntaxRule)
         self.indentator.dedent()
         return syntax
 
@@ -150,7 +150,7 @@ class Parser:
         while(self.show_next().kind == 'SEPARATOR'):
             self.expect('SEPARATOR')
             definition = self.parseDefinition()
-            definitions.definitions.append(definition)
+            definitions.addDefinition(definition)
         self.indentator.dedent()
         return definitions
 

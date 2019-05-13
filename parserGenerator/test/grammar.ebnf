@@ -25,7 +25,7 @@ OptionalSeq = '[', Definitions, ']';
 RepeatedSeq = '{', Definitions, '}';
 (* The braces { and } enclose symbols which may be repeated any number of times *)
 GroupedSeq = '(', Definitions, ')';
-(* The parenthesis allow any <definitions list> to be a <primary> *)
+(* The parenthesis ( and ) allow any <definitions list> to be a <primary> *)
 SpecialSeq = '?', {Character - '?'}, '?';
 (* The meaning of a <special sequence> is not defined in the standard metalanguage *)
 TerminalString = "'", Character - "'", {Character - "'"}, "'"

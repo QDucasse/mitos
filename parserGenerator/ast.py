@@ -12,18 +12,19 @@ class Grammar(Node):
         self.syntax = syntax
 
     def __repr__(self):
-        string = "Grammar - "
-        string += str(self.syntax)
-        return string
+        return "Grammar - {0}".format(str(self.syntax))
 
 class Syntax(Node):
     def __init__(self,syntaxRules=[]):
         self.syntaxRules = syntaxRules
 
+    def addRule(self, syntaxRule):
+        self.syntaxRules.append(syntaxRule)
+
     def __repr__(self):
         string = "Syntax - "
         for syntaxRule in self.syntaxRules:
-            string += str(syntaxRule)
+            string += '\n\t' + str(syntaxRule)
         return string
 
 
@@ -35,27 +36,33 @@ class SyntaxRule(Node):
     def __repr__(self):
         string = "Syntax Rule - {0}".format(self.identifier)
         for definition in self.definitions.definitions:
-            string += str(definition) + '\n'
+            string += '\n\t\t' + str(definition)
         return string
 
 class Definitions(Node):
     def __init__(self,definitions=[]):
         self.definitions = definitions
 
+    def addDefinition(self,definition):
+        self.definitions.append(definition)
+
     def __repr__(self):
         string = "Definitions - "
         for definition in self.definitions:
-            string += str(definition)
+            string += '\n\t' + str(definition)
         return string
 
 class Definition(Node):
     def __init__(self,terms=[]):
         self.terms = []
 
+    def addTerm(self,term):
+        self.terms.append(term)
+
     def __repr__(self):
         string = "Definition - "
         for term in self.terms:
-            string += str(term)
+            string += '\n\t' + str(term)
         return string
 
 
@@ -65,10 +72,10 @@ class Term(Node):
         self.exception = exception
 
     def __repr__(self):
-        string = "Term - {0}".format(self.factor)
-        if self.exception != None:
-            string += '- {0}'.format(self.exception)
-        return string
+        # string = "Term - {0}".format(self.factor)
+        # if self.exception != None:
+        #     string += ' - {0}'.format(self.exception)
+        return '\t\tTEST_TERM'
 
 class Exception(Node):
     def __init__(self,factor=None):
@@ -85,7 +92,7 @@ class Factor(Node):
     def __repr__(self):
         string = "Factor - "
         if self.integer != 0:
-            string += str(integer) + "* "
+            string += str(integer) + " * "
         string += str(self.primary)
         return string
 
@@ -130,7 +137,7 @@ class OptionalSeq(Node):
 
     def __repr__(self):
         string = "Optional Sequence - [ "
-        for definition in definitions:
+        for definition in self.definitions.definitions:
             string += str(definition)
         string += "]"
         return string
@@ -152,7 +159,7 @@ class GroupedSeq(Node):
 
     def __repr__(self):
         string = "Grouped Sequence - ( "
-        for definition in definitions:
+        for definition in self.definitions.definitions:
             string += str(definition)
         string += ")"
         return string
