@@ -29,14 +29,13 @@ class Syntax(Node):
 
 
 class SyntaxRule(Node):
-    def __init__(self,identifier=None,definitions=[]):
+    def __init__(self,identifier=None,definitions=None):
         self.identifier  = identifier
         self.definitions = definitions
 
     def __repr__(self):
-        string = "Syntax Rule - {0}".format(self.identifier)
-        for definition in self.definitions.definitions:
-            string += '\n\t\t' + str(definition)
+        string = "Syntax Rule: {0}".format(self.identifier)
+        string += '\n\t- ' + str(self.definitions)
         return string
 
 class Definitions(Node):
@@ -72,10 +71,10 @@ class Term(Node):
         self.exception = exception
 
     def __repr__(self):
-        # string = "Term - {0}".format(self.factor)
-        # if self.exception != None:
-        #     string += ' - {0}'.format(self.exception)
-        return '\t\tTEST_TERM'
+         # string = "Term - {0}".format(self.factor)
+         # if self.exception != None:
+         #     string += ' - {0}'.format(self.exception)
+         return 'test Term'
 
 class Exception(Node):
     def __init__(self,factor=None):
