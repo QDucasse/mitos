@@ -34,7 +34,7 @@ class SyntaxRule(Node):
         self.definitions = definitions
 
     def __repr__(self):
-        string = "Syntax Rule: {0}".format(self.identifier)
+        string = "Syntax Rule - {0} = ".format(self.identifier)
         string += '\n\t- ' + str(self.definitions)
         return string
 
@@ -61,7 +61,7 @@ class Definition(Node):
     def __repr__(self):
         string = "Definition - "
         for term in self.terms:
-            string += '\n\t' + str(term)
+            string += '\n\t\t' + str(term)
         return string
 
 
@@ -71,10 +71,10 @@ class Term(Node):
         self.exception = exception
 
     def __repr__(self):
-         # string = "Term - {0}".format(self.factor)
-         # if self.exception != None:
-         #     string += ' - {0}'.format(self.exception)
-         return 'test Term'
+         string = "Term - {0}".format(self.factor)
+         if self.exception != None:
+             string += ' - {0}'.format(self.exception)
+         return string
 
 class Exception(Node):
     def __init__(self,factor=None):
@@ -145,12 +145,11 @@ class RepeatedSeq(Node):
     def __init__(self,definitions=[]):
         self.definitions = definitions
 
-    def __repr__(self):
-        string = "Repeated Sequence - { "
-        for definition in self.definitions.definitions:
-            string += str(definition)
-        string += "}"
-        return string
+    # def __repr__(self):
+    #     string = "Repeated Sequence - { "
+    #     string += str(self.definitions)
+    #     string += "}"
+    #     return string
 
 class GroupedSeq(Node):
     def __init__(self,definitions=[]):
@@ -158,8 +157,7 @@ class GroupedSeq(Node):
 
     def __repr__(self):
         string = "Grouped Sequence - ( "
-        for definition in self.definitions.definitions:
-            string += str(definition)
+        string += str(self.definitions)
         string += ")"
         return string
 
@@ -198,7 +196,7 @@ class Identifier(Node):
         self.value = value
 
     def __repr__(self):
-        return "Identifier - {0} ".format(self.value)
+        return "Identifier: '{0}' ".format(self.value)
 
 class Empty(Node):
     def __init__(self):

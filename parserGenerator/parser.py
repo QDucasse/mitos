@@ -101,8 +101,9 @@ class Parser:
         Root of the program, beginning of the parsing
         '''
         self.indentator.indent('Parsing Grammar')
+        grammar = Grammar()
         syntax  = self.parseSyntax()
-        grammar = Grammar(syntax)
+        grammar.syntax = syntax
         self.indentator.dedent()
         if (self.errors == 1):
             print('WARNING: 1 error found!')
@@ -131,11 +132,13 @@ class Parser:
         SyntaxRule = Identifier, '=', Definitions, ';';  //EBNF
         '''
         self.indentator.indent('Parsing Syntax Rule')
+        syntaxRule = SyntaxRule()
         identifier  = self.parseIdentifier()
+        syntaxRule.identifier = identifier
         self.expect('ASSIGN')
         definitions = self.parseDefinitions()
+        syntaxRule.definitions = definitions
         self.expect('TERMINATOR')
-        syntaxRule = SyntaxRule(identifier,definitions)
         self.indentator.dedent()
         return syntaxRule
 
@@ -144,8 +147,8 @@ class Parser:
         Parses definitions:
         Definitions = Definition, {'|', Definition};  //EBNF
         '''
-        definitions = Definitions()
         self.indentator.indent('Parsing Definitions')
+        definitions = Definitions()
         self.parseDefinition()
         while(self.show_next().kind == 'SEPARATOR'):
             self.expect('SEPARATOR')
@@ -159,14 +162,14 @@ class Parser:
         Parses a definition:
         Definition = Term, {',', Term};  //EBNF
         '''
-        definition = Definition()
         self.indentator.indent('Parsing Definition')
+        definition = Definition()
         mainTerm = self.parseTerm()
-        definition.terms.append(mainTerm)
+        definition.addTerm(mainTerm)
         while(self.show_next().kind == 'CONCATENATION'):
             self.expect('CONCATENATION')
             otherTerm=self.parseTerm()
-            definition.terms.append(otherTerm)
+            definition.addTerm(otherTerm)
         self.indentator.dedent()
         return definition
 
@@ -176,12 +179,14 @@ class Parser:
         Term = Factor, ['-', Exception];  //EBNF
         '''
         self.indentator.indent('Parsing Term')
+        term = Term()
         factor    = self.parseFactor()
+        term.factor = factor
         exception = None
         if self.show_next().kind == 'EXCEPT':
             self.expect('EXCEPT')
             exception = self.parseException()
-        term = Term(factor,exception)
+            term.exception = exception
         self.indentator.dedent()
         return term
 
@@ -191,8 +196,9 @@ class Parser:
         Exception = Factor;  //EBNF
         '''
         self.indentator.indent('Parsing Exception')
+        exception = Exception()
         factor = self.parseFactor()
-        exception = Exception(factor)
+        exception.factor = factor
         self.indentator.dedent()
         return exception
 
@@ -202,12 +208,15 @@ class Parser:
         Factor = [Integer, '*'], Primary; //EBNF
         '''
         self.indentator.indent('Parsing Factor')
+        factor = Factor()
         integer = 0
+        factor.integer = integer
         if self.show_next().kind == 'DIGIT':
             integer = self.parseInteger()
+            factor.integer = integer
             self.expect('REPETITION')
         primary = self.parsePrimary()
-        factor = Factor(integer,primary)
+        factor.primary = primary
         self.indentator.dedent()
         return factor
 
@@ -222,30 +231,30 @@ class Parser:
                 | Identifier
                 | Empty;            //EBNF
         '''
-        optionalSeq    = None
-        repeatedSeq    = None
-        groupedSeq     = None
-        specialSeq     = None
-        terminalString = None
-        identifier     = None
-        empty          = None
+
         self.indentator.indent('Parsing Primary')
+        primary = Primary()
         if self.show_next().kind   == 'LBRACKET':
             optionalSeq = self.parseOptionalSeq()
+            primary.optionalSeq = optionalSeq
         elif self.show_next().kind == 'LBRACE':
             repeatedSeq = self.parseRepeatedSeq()
+            primary.repeatedSeq = repeatedSeq
         elif self.show_next().kind == 'LPAREN':
             groupedSeq = self.parseGroupedSeq()
+            primary.groupedSeq = groupedSeq
         elif self.show_next().kind == 'SPECIAL':
-            specialSeq = self.parseSpecial()
+            specialSeq = self.parseSpecialSeq()
+            primary.specialSeq = specialSeq
         elif self.show_next().kind in Parser.TERMINAL_STRING:
             terminalString = self.parseTerminalString()
+            primary.terminalString = terminalString
         elif self.show_next().kind == 'IDENTIFIER':
             identifier = self.parseIdentifier()
+            primary.identifier = identifier
         else:
             empty = self.parseEmpty()
-        primary = Primary(optionalSeq,repeatedSeq,groupedSeq,
-                          specialSeq,terminalString,identifier,empty)
+            primary.empty = empty
         self.indentator.dedent()
         return primary
 
@@ -255,10 +264,11 @@ class Parser:
         OptionalSeq = '[', Definitions, ']';  //EBNF
         '''
         self.indentator.indent('Parsing Optional Sequence')
+        optionalSeq = OptionalSeq()
         self.expect('LBRACKET')
         definitions = self.parseDefinitions()
+        optionalSeq.definitions = definitions
         self.expect('RBRACKET')
-        optionalSeq = OptionalSeq(definitions)
         self.indentator.dedent()
         return optionalSeq
 
@@ -268,10 +278,11 @@ class Parser:
         RepeatedSeq = '{', Definitions, '}';  //EBNF
         '''
         self.indentator.indent('Parsing Repeated Sequence')
+        repeatedSeq = RepeatedSeq()
         self.expect('LBRACE')
         definitions = self.parseDefinitions()
+        repeatedSeq.definitions = definitions
         self.expect('RBRACE')
-        repeatedSeq = RepeatedSeq(definitions)
         self.indentator.dedent()
         return repeatedSeq
 
@@ -281,10 +292,11 @@ class Parser:
         GroupedSeq = '(', Definitions, ')';  //EBNF
         '''
         self.indentator.indent('Parsing Grouped Sequence')
+        groupedSeq = GroupedSeq()
         self.expect('LPAREN')
         definitions = self.parseDefinitions()
+        groupedSeq.definitions = definitions
         self.expect('RPAREN')
-        groupedSeq = GroupedSeq(definitions)
         self.indentator.dedent()
         return groupedSeq
 
@@ -294,9 +306,10 @@ class Parser:
         SpecialSeq = '?', {Character - '?'}, '?';  //EBNF
         '''
         self.indentator.indent('Parsing Special Sequence')
+        specialSeq = SpecialSeq()
         token = self.expect('SPECIAL')
         value = token.value
-        specialSeq = SpecialSeq(value)
+        specialSeq.value = value
         self.indentator.dedent()
         return specialSeq
 
@@ -307,14 +320,15 @@ class Parser:
                        | '"', Character - '"', {Character - '"'}, '"';  //EBNF
         '''
         self.indentator.indent('Parsing Terminal String')
+        terminalString = TerminalStringFQuote()
         if self.show_next().kind == 'FQUOTE':
             token = self.expect('FQUOTE')
             value = token.value
-            terminalString = TerminalStringFQuote(value)
+            terminalString.value = value
         elif self.show_next().kind == 'SQUOTE':
             token = self.expect('SQUOTE')
             value = token.value
-            terminalString = TerminalStringSQuote(value)
+            terminalString.value = value
         self.indentator.dedent()
         return terminalString
 
@@ -324,9 +338,10 @@ class Parser:
         Identifier = Letter, {Letter | Digit};  //EBNF
         '''
         self.indentator.indent('Parsing Identifier')
+        identifier = Identifier()
         token = self.expect('IDENTIFIER')
         value = token.value
-        identifier = Identifier(value)
+        identifier.value = value
         self.indentator.dedent()
         return identifier
 
@@ -346,8 +361,9 @@ class Parser:
         Integer = Digit, {Digit};  //EBNF
         '''
         self.indentator.indent('Parsing Integer')
+        integer = Integer()
         token = self.expect('INTEGER')
         value = token.value
-        integer = Integer(value)
+        integer.value = value
         self.indentator.dedent()
         return integer

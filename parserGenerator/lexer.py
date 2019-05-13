@@ -1,6 +1,6 @@
 import re
 import sys
-from token import Token
+from token1 import Token
 
 regexExpressions = [
     (r'\(\*[\s\S]*?\*\)', 'COMMENT'),
