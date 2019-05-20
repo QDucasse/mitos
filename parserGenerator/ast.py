@@ -27,7 +27,6 @@ class Syntax(Node):
             string += '\n\t' + str(syntaxRule)
         return string
 
-
 class SyntaxRule(Node):
     def __init__(self,identifier=None,definitions=None):
         self.identifier  = identifier
