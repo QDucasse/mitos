@@ -1,4 +1,4 @@
-from visitor import Visitor
+#from visitor import Visitor
 
 class Node():
     def accept(self, visitor, args):
