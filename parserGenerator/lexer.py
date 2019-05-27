@@ -17,8 +17,8 @@ regexExpressions = [
 
     # Groups
 
-    (r'\"[^\"]*\"',         'SQUOTE'),
-    (r'\'[^\']*\'',         'FQUOTE'),
+    (r'\'[^\']*\'',         'SQUOTE'),
+    (r'\"[^\"]*\"',         'DQUOTE'),
     (r'\?[^\?]*\?',         'SPECIAL'),
     (r'\(',                 'LPAREN'),
     (r'\)',                 'RPAREN'),
@@ -57,8 +57,6 @@ class Lexer:
                         if tag:
                             token = Token(tag, data, [lineNumber, position])
                             self.tokens.append(token)
-                            # print('\n')
-                            # print(token)
                         break
                 if not match:
                     print(inputText[position])

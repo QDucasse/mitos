@@ -2,6 +2,7 @@ import sys
 import argparse
 from lexer import Lexer
 from parser import Parser
+from visitor import Visitor
 
 
 if __name__ == '__main__':
@@ -20,6 +21,9 @@ if __name__ == '__main__':
     verbose = True
     parser = Parser(verbose)
     grammar = parser.parse(tokens)
+
+    visitor = Visitor()
+    visitor.visit(grammar)
     # print(grammar)
 
     # print("--------TEST AST PRINT---------")

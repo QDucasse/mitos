@@ -7,7 +7,7 @@ from colors import Colors
 
 class Parser:
 
-    TERMINAL_STRING = [ 'SQUOTE','FQUOTE' ]
+    TERMINAL_STRING = [ 'SQUOTE','DQUOTE' ]
 
     def __init__(self, verbose=False):
         '''
@@ -273,13 +273,7 @@ class Parser:
         else:
             empty = self.parseEmpty()
             primary.empty = empty
-        self.indentator.say(Colors.OKGREEN + 'End Primary with values: ' +  Colors.ENDC + str(primary.optionalSeq)    + ' '
-                                                                                           + str(primary.repeatedSeq)    + ' '
-                                                                                           + str(primary.groupedSeq)     + ' '
-                                                                                           + str(primary.specialSeq)     + ' '
-                                                                                           + str(primary.terminalString) + ' '
-                                                                                           + str(primary.identifier)     + ' '
-                                                                                           + str(primary.empty))
+        self.indentator.say(Colors.OKGREEN + 'End Primary with values: ' +  Colors.ENDC + str(primary.optionalSeq)    + ' '                                                                               + str(primary.empty))
         self.indentator.dedent()
         return primary
 
@@ -354,13 +348,14 @@ class Parser:
         '''
         self.indentator.indent('Parsing Terminal String')
         self.indentator.say(Colors.OKGREEN + 'New Terminal String' +  Colors.ENDC)
-        terminalString = TerminalStringFQuote()
-        if self.show_next().kind == 'FQUOTE':
-            token = self.expect('FQUOTE')
+        if self.show_next().kind == 'SQUOTE':
+            terminalString = TerminalStringSQuote()
+            token = self.expect('SQUOTE')
             value = token.value
             terminalString.value = value
-        elif self.show_next().kind == 'SQUOTE':
-            token = self.expect('SQUOTE')
+        elif self.show_next().kind == 'DQUOTE':
+            terminalString = TerminalStringDQuote()
+            token = self.expect('DQUOTE')
             value = token.value
             terminalString.value = value
         self.indentator.say(Colors.OKGREEN + 'End Terminal String with values: ' +  Colors.ENDC + str(terminalString.value))

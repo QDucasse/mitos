@@ -4,7 +4,9 @@ class Node():
     def accept(self, visitor, args):
         className  = self.__class__.__name__
         methodName = getattr(visitor, "visit" + className)
-        visitor.nomMethode(self, args)
+        print('Visiting '+ className)
+        methodName(args)
+
 
 
 class Grammar(Node):
@@ -177,18 +179,18 @@ class TerminalString(Node):
 class TerminalStringSQuote(TerminalString):
     def __init__(self,value=''):
         super().__init__(value)
-        self.separator = '\"'
-
-    def __repr__(self):
-        return "Terminal String (S Quote) - {0}{1}{0}".format(self.separator,self.value)
-
-class TerminalStringFQuote(TerminalString):
-    def __init__(self,value=''):
-        super().__init__(value)
         self.separator = '\''
 
     def __repr__(self):
-        return "Terminal String (F Quote) - {0}{1}{0}".format(self.separator,self.value)
+        return "Terminal String (S Quote) - {0}".format(self.value)
+
+class TerminalStringDQuote(TerminalString):
+    def __init__(self,value=''):
+        super().__init__(value)
+        self.separator = '\"'
+
+    def __repr__(self):
+        return "Terminal String (D Quote) - {0}".format(self.value)
 
 class Identifier(Node):
     def __init__(self,value=''):
