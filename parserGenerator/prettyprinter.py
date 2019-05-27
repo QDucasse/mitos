@@ -1,11 +1,23 @@
 from lexemDictionary import LexemDictionary
 
-class Visitor:
-    def __init__(self):
+class SaveFile():
+    def __init__(self,name):
+        self.f=open(name,"w")
+    
+    def write(self,data):
+        self.f.write(data)
+     
+    def close(self):
+        self.f.close()
+
+class PrettyPrinter:
+    def __init__(self,name="prettyprinter_input"):
         lexemDictionary = LexemDictionary()
+        self.file=SaveFile(name)
 
     def visit(self,grammar):
         grammar.accept(self,grammar)
+        self.file.close()
 
     def visitGrammar(self,grammar):
         # Visits grammar
@@ -27,22 +39,28 @@ class Visitor:
         # Visits all definitions
         defs = syntaxRule.definitions
         id.accept(self,id)
+        self.file.write("=")
         defs.accept(self,defs)
+        self.file.write(";\n")
         # ARGS
         # self.identifier  = identifier
         # self.definitions = definitions
 
     def visitDefinitions(self,definitions):
         # Visits all definitions
-        for definition in definitions.definitions:
+        for definition in definitions.definitions[0:-1]:
             definition.accept(self,definition)
+            self.file.write("|")
+        definitions.definitions[-1].accept(self,definitions.definitions[-1])
         # ARGS
         # self.definitions = definitions
 
     def visitDefinition(self,definition):
         # Visits all terms
-        for term in definition.terms:
+        for term in definition.terms[0:-1]:
             term.accept(self,term)
+            self.file.write(",")
+        definition.terms[-1].accept(self,definition.terms[-1])
         # ARGS
         #self.terms = []
 
@@ -59,6 +77,7 @@ class Visitor:
 
     def visitException(self,exception):
         # Visits the exception
+        self.file.write("-")
         exception.factor.accept(self,exception.factor)
         # ARGS
         # self.factor = factor
@@ -72,13 +91,19 @@ class Visitor:
 
     def visitPrimary(self,primary):
         if primary.optionalSeq != None:
+            self.file.write("[")
             primary.optionalSeq.accept(self,primary.optionalSeq)
+            self.file.write("]")
         elif primary.identifier != None:
             primary.identifier.accept(self,primary.identifier)
         elif primary.repeatedSeq != None:
+            self.file.write("{")
             primary.repeatedSeq.accept(self,primary.repeatedSeq)
+            self.file.write("}")
         elif primary.groupedSeq != None:
+            self.file.write("(")
             primary.groupedSeq.accept(self,primary.groupedSeq)
+            self.file.write(")")
         elif primary.specialSeq != None:
             primary.specialSeq.accept(self,primary.specialSeq)
         elif primary.terminalString != None:
@@ -110,6 +135,7 @@ class Visitor:
         # self.definitions = definitions
 
     def visitSpecialSeq(self,specialSeq):
+        self.file.write(specialSeq.value)
         pass
         # ARGS
         # self.definitions = definitions
@@ -120,17 +146,19 @@ class Visitor:
         # self.value = value
 
     def visitTerminalStringSQuote(self,terminalStringSQuote):
+        self.file.write(" "+terminalStringSQuote.value+" ")
         pass
         # ARGS
         # self.value = value
 
     def visitTerminalStringDQuote(self,terminalStringDQuote):
+        self.file.write(" "+terminalStringDQuote.value+" ")
         pass
         # ARGS
         # self.value = value
 
     def visitIdentifier(self,identifier):
-        print(identifier.value)
+        self.file.write(" "+identifier.value+" ")
         pass
         # ARGS
         # self.value = value
@@ -139,6 +167,7 @@ class Visitor:
         pass
 
     def visitInteger(self,integer):
+        self.file.write(" "+integer.value+" ")
         pass
         # ARGS
         # self.value = value
