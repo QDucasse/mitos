@@ -1,6 +1,3 @@
-from newLexer import NewLexer
-from newParser import NewParser
-
 class Visitor:
 
     def visit(self,grammar):
