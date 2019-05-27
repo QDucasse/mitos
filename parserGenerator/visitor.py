@@ -1,6 +1,4 @@
 class Visitor:
-    def __init__(self):
-        lexemDictionary = LexemDictionary()
 
     def visit(self,grammar):
         grammar.accept(self,grammar)
@@ -85,11 +83,8 @@ class Visitor:
 
     def visitTerminalStringDQuote(self,terminalStringDQuote):
         pass
-        # ARGS
-        # self.value = value
 
     def visitIdentifier(self,identifier):
-        print(identifier.value)
         pass
 
 
