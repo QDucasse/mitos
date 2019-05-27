@@ -1,10 +1,7 @@
-from lexemDictionary import LexemDictionary
 from newLexer import NewLexer
 from newParser import NewParser
 
 class Visitor:
-    def __init__(self):
-        lexemDictionary = LexemDictionary()
 
     def visit(self,grammar):
         grammar.accept(self,grammar)
@@ -85,30 +82,28 @@ class Visitor:
         pass
 
     def visitTerminalStringSQuote(self,terminalStringSQuote):
-        lexemToTest = terminalStringSQuote.value
-        regexExpressions = lexemDictionary.regexExpressions
-        match = None
-        for tokenRegex in regexExpressions:
-            pattern, tag = tokenRegex
-            regex = re.compile(pattern)
-            match = regex.match(line, position)
-            if match:
-                data = match.group(0)
-                if tag:
-                    # Ajout à la liste des lexemes -> Fichier py
-                break
-        if not match:
-            print(inputText[position])
-            print("No match")
-            sys.exit(1)
+        pass
+        # lexemToTest = terminalStringSQuote.value
+        # regexExpressions = lexemDictionary.regexExpressions
+        # match = None
+        # for tokenRegex in regexExpressions:
+        #     pattern, tag = tokenRegex
+        #     regex = re.compile(pattern)
+        #     match = regex.match(line, position)
+        #     if match:
+        #         data = match.group(0)
+        #         if tag:
+        #             # Ajout à la liste des lexemes -> Fichier py
+        #         break
+        # if not match:
+        #     print(inputText[position])
+        #     print("No match")
+        #     sys.exit(1)
 
     def visitTerminalStringDQuote(self,terminalStringDQuote):
         pass
-        # ARGS
-        # self.value = value
 
     def visitIdentifier(self,identifier):
-        print(identifier.value)
         pass
 
 
@@ -116,3 +111,4 @@ class Visitor:
         pass
 
     def visitInteger(self,integer):
+        pass
