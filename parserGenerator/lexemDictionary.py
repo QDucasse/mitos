@@ -1,12 +1,13 @@
 import re
 import sys
 
+
 class LexemDictionary():
 
     regexExpressions = [
         # White space
         (r'[ \n\t]+', None),
-        (r'#[^\n]*', None),  #Commentaires
+        (r'#[^\n]*', None),  #Comments with #
         # Punctuation
         (r'\(',   'LPAREN'),
         (r'\)',   'RPAREN'),
