@@ -5,9 +5,10 @@ from lexer import Lexer
 from parser import Parser
 #from visitor import Visitor
 from lexerWriter import LexerWriter
+from prettyPrinter import PrettyPrinter
 
 if __name__ == '__main__':
-    testFileName = 'test/pascal_grammar.ebnf'
+    testFileName = 'grammars/pascal_grammar.ebnf'
 
     try:
       with open(testFileName, 'r') as testFile:
@@ -23,7 +24,10 @@ if __name__ == '__main__':
     parser = Parser(verbose)
     grammar = parser.parse(tokens)
 
-    writer = LexerWriter()
+    writer = LexerWriter("results/lexerWriter/pascalLexer.py")
     writer.visit(grammar)
     print(writer.lexemList)
     writer.write(writer.lexemList)
+
+    pp = PrettyPrinter("results/prettyPrinter/pascal_grammar_pp.ebnf")
+    pp.visit(grammar)

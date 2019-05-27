@@ -1,10 +1,36 @@
 import re
 import sys
-from token import Token
+
+class Token:
+
+	def __init__(self, kind, value, position):
+		self.kind = kind
+		self.value = value
+		self.position = position
+
+	def __repr__(self):
+		return self.kind
 
 class LexerTemplate:
 
-    regexExpressions = []
+    regexExpressions = [
+		(r'[\n]+',None),
+		(r'\=','ASSIGN'),
+		(r'\;','SEMICOLON'),
+		(r'\|','PIPE'),
+		(r'\,','COMMA'),
+		(r'\-','SUB'),
+		(r'\*','MUL'),
+		(r'^\[$','LBRACKET'),
+		(r'\]','RBRACKET'),
+		(r'\{','LBRACE'),
+		(r'\}','RBRACE'),
+		(r'\(','LPAREN'),
+		(r'\)','RPAREN'),
+		(r'\?','INTERROGATION'),
+		(r'\'','SQUOTE'),
+		(r'\"','DQUOTE'),
+		(r'\\','BSLASH')]
 
     def __init__(self):
         self.tokens = []
@@ -18,7 +44,7 @@ class LexerTemplate:
             # print(line)
             while position < len(line):
                 match = None
-                for tokenRegex in regexExpressions:
+                for tokenRegex in self.regexExpressions:
                     pattern, tag = tokenRegex
                     regex = re.compile(pattern)
                     match = regex.match(line, position)
@@ -29,7 +55,7 @@ class LexerTemplate:
                             self.tokens.append(token)
                         break
                 if not match:
-                    print(inputText[position])
+                    print(line[position])
                     print("No match")
                     sys.exit(1)
                 else:

@@ -1,0 +1,18 @@
+ Syntax = SyntaxRule ,{ SyntaxRule };
+ SyntaxRule = Identifier , '=' , Definitions , ';' ;
+ Definitions = Definition ,{ '|' , Definition };
+ Definition = Term ,{ ',' , Term };
+ Term = Factor ,[ '-' , Exception ];
+ Exception = Factor ;
+ Factor =[ Integer , '*' ], Primary ;
+ Primary = OptionalSeq | RepeatedSeq | GroupedSeq | SpecialSeq | TerminalString | Identifier | Empty ;
+ OptionalSeq = '[' , Definitions , ']' ;
+ RepeatedSeq = '{' , Definitions , '}' ;
+ GroupedSeq = '(' , Definitions , ')' ;
+ SpecialSeq = '?' ,{ Character - '?' }, '?' ;
+ TerminalString = "'" , Character - "'" ,{ Character - "'" }, "'" | '"' , Character - '"' ,{ Character - '"' }, '"' ;
+ Identifier = Letter ,{ Letter | Digit };
+ Empty =;
+ Integer = Digit ,{ Digit };
+ Comment = '\(\*' ,{ CommentSymbol }, '\*\)' ;
+ CommentSymbol = Comment | TerminalString | SpecialSeq | Character ;

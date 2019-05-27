@@ -1,23 +1,11 @@
 from lexemDictionary import LexemDictionary
 from visitor import Visitor
-
-class SaveFile():
-    def __init__(self,name):
-        self.f=open(name,"w")
-    
-    def write(self,data):
-        self.f.write(data)
-     
-    def close(self):
-        self.f.close()
+from file import File
 
 class PrettyPrinter(Visitor):
-    def __init__(self,name="prettyprinter_input"):
+    def __init__(self,name="results/prettyPrinter/prettyprinter_output.ebnf"):
         lexemDictionary = LexemDictionary()
-        self.file=SaveFile(name)
-
-
-
+        self.file=File(name)
 
     def visitSyntaxRule(self,syntaxRule):
         id   = syntaxRule.identifier
@@ -90,4 +78,3 @@ class PrettyPrinter(Visitor):
 
     def visitInteger(self,integer):
         self.file.write(" "+integer.value+" ")
-

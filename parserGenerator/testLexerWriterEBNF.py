@@ -1,12 +1,14 @@
+import re
 import sys
 import argparse
 from lexer import Lexer
 from parser import Parser
 #from visitor import Visitor
-from prettyprinter import PrettyPrinter
+from lexerWriter import LexerWriter
+from prettyPrinter import PrettyPrinter
 
 if __name__ == '__main__':
-    testFileName = 'test/grammar.ebnf'
+    testFileName = 'grammars/ebnf_grammar.ebnf'
 
     try:
       with open(testFileName, 'r') as testFile:
@@ -22,5 +24,10 @@ if __name__ == '__main__':
     parser = Parser(verbose)
     grammar = parser.parse(tokens)
 
-    visitor = PrettyPrinter()
-    visitor.visit(grammar)
+    writer = LexerWriter("results/lexerWriter/ebnfLexer.py")
+    writer.visit(grammar)
+    print(writer.lexemList)
+    writer.write(writer.lexemList)
+
+    pp = PrettyPrinter("results/prettyPrinter/ebnf_grammar_pp.ebnf")
+    pp.visit(grammar)

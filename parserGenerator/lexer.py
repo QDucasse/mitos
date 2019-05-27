@@ -59,7 +59,7 @@ class Lexer:
                             self.tokens.append(token)
                         break
                 if not match:
-                    print(inputText[position])
+                    print(line[position])
                     print("No match")
                     sys.exit(1)
                 else:
