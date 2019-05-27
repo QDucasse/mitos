@@ -42,7 +42,6 @@ class LexemDictionary():
         (r'\\',   'BSLASH'),
         (r'\/',   'FSLASH'),
         # Identifiant, chaines de
-        (r'[a-zA-Z]\w*', 'IDENTIFIER'),
         (r'\d+\.\d+',    'FLOAT_LIT'),
         (r'\d+',         'INTEGER_LIT'),
         (r'\"[^\"]*\"',  'STRING_LIT'),
