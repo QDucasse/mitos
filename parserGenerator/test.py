@@ -6,7 +6,7 @@ from visitor import Visitor
 
 
 if __name__ == '__main__':
-    testFileName = 'test/pascal_grammar.ebnf'
+    testFileName = 'test/grammar.ebnf'
 
     try:
       with open(testFileName, 'r') as testFile:
