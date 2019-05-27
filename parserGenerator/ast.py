@@ -4,7 +4,7 @@ class Node():
     def accept(self, visitor, args):
         className  = self.__class__.__name__
         methodName = getattr(visitor, "visit" + className)
-        print('Visiting '+ className)
+        #print('Visiting '+ className)
         methodName(args)
 
 

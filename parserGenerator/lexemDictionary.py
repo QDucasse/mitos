@@ -1,7 +1,8 @@
 import re
 import sys
 
-class LexemDictionary:
+
+class LexemDictionary():
 
     regexExpressions = [
         # White space
