@@ -1,46 +1,24 @@
-import re
 import sys
-from token1 import Token
 
-regexExpressions = [
-    (r'\(\*[\s\S]*?\*\)', 'COMMENT'),
-    # Whitespaces
-    (r'[ \n\t]+', None),
+class Token:
 
-    # Special characters
-    (r'\;', 'TERMINATOR'),
-    (r'\,', 'CONCATENATION'),
-    (r'\=', 'ASSIGN'),
-    (r'\-', 'EXCEPT'),
-    (r'\*', 'REPETITION'),
-    (r'\|', 'SEPARATOR'),
+	def __init__(self, kind, value, position):
+		self.kind = kind
+		self.value = value
+		self.position = position
 
-    # Groups
+	def __repr__(self):
+		return self.kind
 
-    (r'\'[^\']*\'',         'SQUOTE'),
-    (r'\"[^\"]*\"',         'DQUOTE'),
-    (r'\?[^\?]*\?',         'SPECIAL'),
-    (r'\(',                 'LPAREN'),
-    (r'\)',                 'RPAREN'),
-    (r'\{',                 'LBRACE'),
-    (r'\}',                 'RBRACE'),
-    (r'\[',                 'LBRACKET'),
-    (r'\]',                 'RBRACKET'),
+class LexerTemplate:
 
-    # Identifiers & Integers
-    (r'[a-zA-Z]\w*', 'IDENTIFIER'),
-    (r'\d+',         'INTEGER'),
-]
-
-
-class Lexer:
+    regexExpressions = [{{lexer}}]
 
     def __init__(self):
         self.tokens = []
 
-    # inputText = open("testFile.c").readlines()
-    def lex(self, inputText):
 
+    def lex(self, inputText):
         lineNumber = 0
         for line in inputText:
             lineNumber += 1
@@ -48,7 +26,7 @@ class Lexer:
             # print(line)
             while position < len(line):
                 match = None
-                for tokenRegex in regexExpressions:
+                for tokenRegex in self.regexExpressions:
                     pattern, tag = tokenRegex
                     regex = re.compile(pattern)
                     match = regex.match(line, position)
@@ -66,3 +44,4 @@ class Lexer:
                     position = match.end(0)
         print("Lexer: analysis successful!")
         return self.tokens
+
