@@ -84,142 +84,121 @@ class Parser:
                 result.append(token)
         return result
         
+
     def parseProgram(self):
         self.indentator.indent('Parsing Program')
-        
-            self.expect('PROGRAM')
-        
-            self.expect('BEGIN')
-        
+        self.expect('PROGRAM')
+        self.parseWhitespace()
+        self.parseIdentifier()
+        self.parseWhitespace()
+        self.expect('BEGIN')
+        self.parseWhitespace()
+        while():
+            self.parseAssignment()
             self.expect(";")
-        
-            self.expect('END.')
-        
+            self.parseWhitespace()
+            
+        self.expect('END.')
         self.indentator.dedent()
+
 
     def parseIdentifier(self):
         self.indentator.indent('Parsing Identifier')
-        
+        self.parseAlphabeticcharacter()
+        while():
+            self.parseAlphabeticcharacter()
+            self.parseDigit()
+            
         self.indentator.dedent()
+
 
     def parseNumber(self):
         self.indentator.indent('Parsing Number')
-        
+        if():
             self.expect("-")
-        
+            
+        self.parseDigit()
+        while():
+            self.parseDigit()
+            
         self.indentator.dedent()
+
 
     def parseString(self):
         self.indentator.indent('Parsing String')
-        
+        self.expect('"')
+        while():
+            self.parseAllcharacters()
             self.expect('"')
-        
-            self.expect('"')
-        
-            self.expect('"')
-        
+            
+        self.expect('"')
         self.indentator.dedent()
+
 
     def parseAssignment(self):
         self.indentator.indent('Parsing Assignment')
-        
-            self.expect(":=")
-        
+        self.parseIdentifier()
+        self.expect(":=")
+        self.parseNumber()
+        self.parseIdentifier()
+        self.parseString()
         self.indentator.dedent()
+
 
     def parseAlphabeticcharacter(self):
         self.indentator.indent('Parsing Alphabeticcharacter')
-        
-            self.expect("A")
-        
-            self.expect("B")
-        
-            self.expect("C")
-        
-            self.expect("D")
-        
-            self.expect("E")
-        
-            self.expect("F")
-        
-            self.expect("G")
-        
-            self.expect("H")
-        
-            self.expect("I")
-        
-            self.expect("J")
-        
-            self.expect("K")
-        
-            self.expect("L")
-        
-            self.expect("M")
-        
-            self.expect("N")
-        
-            self.expect("O")
-        
-            self.expect("P")
-        
-            self.expect("Q")
-        
-            self.expect("R")
-        
-            self.expect("S")
-        
-            self.expect("T")
-        
-            self.expect("U")
-        
-            self.expect("V")
-        
-            self.expect("W")
-        
-            self.expect("X")
-        
-            self.expect("Y")
-        
-            self.expect("Z")
-        
+        self.expect("A")
+        self.expect("B")
+        self.expect("C")
+        self.expect("D")
+        self.expect("E")
+        self.expect("F")
+        self.expect("G")
+        self.expect("H")
+        self.expect("I")
+        self.expect("J")
+        self.expect("K")
+        self.expect("L")
+        self.expect("M")
+        self.expect("N")
+        self.expect("O")
+        self.expect("P")
+        self.expect("Q")
+        self.expect("R")
+        self.expect("S")
+        self.expect("T")
+        self.expect("U")
+        self.expect("V")
+        self.expect("W")
+        self.expect("X")
+        self.expect("Y")
+        self.expect("Z")
         self.indentator.dedent()
+
 
     def parseDigit(self):
         self.indentator.indent('Parsing Digit')
-        
-            self.expect("0")
-        
-            self.expect("1")
-        
-            self.expect("2")
-        
-            self.expect("3")
-        
-            self.expect("4")
-        
-            self.expect("5")
-        
-            self.expect("6")
-        
-            self.expect("7")
-        
-            self.expect("8")
-        
-            self.expect("9")
-        
+        self.expect("0")
+        self.expect("1")
+        self.expect("2")
+        self.expect("3")
+        self.expect("4")
+        self.expect("5")
+        self.expect("6")
+        self.expect("7")
+        self.expect("8")
+        self.expect("9")
         self.indentator.dedent()
+
 
     def parseWhitespace(self):
         self.indentator.indent('Parsing Whitespace')
-        
-            self.expect(" ")
-        
+        self.expect(" ")
         self.indentator.dedent()
+
 
     def parseAllcharacters(self):
         self.indentator.indent('Parsing Allcharacters')
-        
-            self.expect("[a-zA-Z0-9 \W]")
-        
+        self.expect("[a-zA-Z0-9 \W]")
         self.indentator.dedent()
 
