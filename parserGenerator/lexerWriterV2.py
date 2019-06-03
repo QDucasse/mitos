@@ -1,6 +1,6 @@
 import re
 from visitor import Visitor
-from lexemDictionary import LexemDictionary
+from lexemDictionary_v2 import LexemDictionary
 from jinja2 import Environment, FileSystemLoader
 
 class LexerWriter(Visitor):
@@ -41,8 +41,8 @@ class LexerWriter(Visitor):
                 if tag:
                     self.lexemList.append((tokenRegex[0],"'"+tokenRegex[1]+"'"))
                     break
-        if not(match) and not(end) and not((lexemToTest,"'"+lexemToTest.upper()+"'") in self.lexemList):
-            self.lexemList.append((lexemToTest,"'" + lexemToTest.upper() + "'"))
+        if not(match) and not(end) and not((lexemToTest,"'"+lexemToTest+"'") in self.lexemList):
+            self.lexemList.append((lexemToTest,"'" + lexemToTest + "'"))
 
 
     def visitTerminalStringDQuote(self,terminalStringDQuote):

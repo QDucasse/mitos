@@ -64,7 +64,7 @@ class Parser:
 
         '''
         token = self.show_next()
-        output = token.value + Colors.ENDC
+        output = Colors.FAIL + token.value + Colors.ENDC
         self.indentator.say(output)
         return self.tokens.pop(0)
 
@@ -297,7 +297,11 @@ class Parser:
 
     def parseWhitespace(self):
         self.indentator.indent('Parsing Whitespace')
-        self.expect(" ")
+        while(self.show_next().kind == " "):
+            self.expect(" ")
+            self.parseWhitespace()
+            
+            
         
         self.indentator.dedent()
 

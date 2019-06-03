@@ -8,12 +8,22 @@ class ParserWriter(Visitor):
         self.lexer=lexer
         self.saving_file=open(name,"w")
         file_loader = FileSystemLoader('templates/parser')#On se place dans le bon dossier 
-        self.env = Environment(loader=file_loader)
+        self.env = Environment(loader=file_loader,extensions=['jinja2.ext.loopcontrols'])
         self.template = self.env.get_template('body.py')#On ouvre le template
         self.output = self.template.render()#On remplace les champs du template
         self.saving_file.write(self.output)
         self.to_generate=[]
+        self.first=None
 
+    def visitGrammar(self,grammar):
+        # Visits grammar
+        syntax = grammar.syntax
+        syntax.accept(self,syntax)
+        #Template for parseMethod()
+        self.template = self.env.get_template('parseMethod.py')
+        self.output=self.template.render(main=self.first)
+        self.saving_file.write(self.output)
+        
     def visitSyntaxRule(self,syntaxRule):
         # Visits identifier
         id   = syntaxRule.identifier
@@ -21,10 +31,41 @@ class ParserWriter(Visitor):
         defs = syntaxRule.definitions
         id.accept(self,id)
         defs.accept(self,defs)
+        #Template for parseMethod()
         self.template = self.env.get_template('method.py')
-        self.output=self.template.render(name=id.value.capitalize(),generator=self.to_generate[1::])
+        self.output=self.template.render(name=id.value.capitalize(),generator=self.to_generate[1::],n=len(self.to_generate[1::]))
+        self.saving_file.write(self.output)
+        #Template for testMethod()
+        to_test=[]#To generate the list of char
+        to_call=[]#To generate the calling of the others testMethod()
+        flag=False
+        if self.to_generate[1]=="opt-begin" or self.to_generate[1]=="or-begin":#While it's an optionnal seq or a OR seq we add it into the two previous list.
+            flag=True
+        for i in range(len(self.to_generate)-1):
+            if self.to_generate[i+1][1]==1:#It's a string
+                to_test.append(self.to_generate[i+1][0][1:-1])
+                if flag==False: break
+            elif self.to_generate[i+1][1]==0:#It's an identifier
+                to_call.append(self.to_generate[i+1][0])
+                if flag==False: break
+            if self.to_generate[i+1]=="opt-end" or self.to_generate[i+1]=="or-end":
+                flag=False
+                
+        self.template = self.env.get_template('testmethod.py')
+        self.output=self.template.render(name=id.value.capitalize(),string_list=to_test,dependance_list=to_call)
         self.saving_file.write(self.output)
         self.to_generate=[]
+
+
+    def visitDefinitions(self,definitions):
+        # Visits all definitions
+        if len(definitions.definitions)>1:
+            self.to_generate.append("or-begin")
+        for definition in definitions.definitions:
+            definition.accept(self,definition)
+            self.to_generate.append("or")
+        self.to_generate=self.to_generate[0:-1]
+        self.to_generate.append("or-end")
 
     def visitTerminalStringSQuote(self,terminalStringSQuote):
         self.to_generate.append((terminalStringSQuote.value,1))#1=Expected , 0=For Parsing
@@ -57,6 +98,7 @@ class ParserWriter(Visitor):
             primary.empty.accept(self,primary.empty)
             
     def visitIdentifier(self,identifier):
+        if (self.first==None): self.first=identifier.value.capitalize()
         self.to_generate.append((identifier.value.capitalize(),0))
 
 

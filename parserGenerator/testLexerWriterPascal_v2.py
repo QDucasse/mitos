@@ -24,9 +24,9 @@ if __name__ == '__main__':
     parser = Parser(verbose)
     grammar = parser.parse(tokens)
 
-    writer = LexerWriter("results/lexerWriter/PascalLexer_fromJinja.py")
+    writer = LexerWriter("results/Pascal/PascalLexer_fromJinja.py")
     writer.visit(grammar)
     writer.write(writer.lexemList)
 
-    pp = PrettyPrinter("results/prettyPrinter/pascal_grammar_pp.ebnf")
+    pp = PrettyPrinter("results/Pascal/pascal_grammar_pp.ebnf")
     pp.visit(grammar)

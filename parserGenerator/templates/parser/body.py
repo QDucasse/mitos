@@ -7,7 +7,6 @@ from colors import Colors
 
 class Parser:
 
-    TERMINAL_STRING = [ 'SQUOTE','DQUOTE' ]
 
     def __init__(self, verbose=False):
         '''
@@ -65,7 +64,7 @@ class Parser:
 
         '''
         token = self.show_next()
-        output = Colors.FAIL + str(token.kind) + ' ' + token.value + Colors.ENDC
+        output = Colors.FAIL + token.value + Colors.ENDC
         self.indentator.say(output)
         return self.tokens.pop(0)
 
