@@ -8,7 +8,7 @@ class ParserWriter(Visitor):
         self.lexer=lexer
         self.saving_file=open(name,"w")
         file_loader = FileSystemLoader('templates/parser')#On se place dans le bon dossier 
-        self.env = Environment(loader=file_loader,extensions=['jinja2.ext.loopcontrols'])
+        self.env = Environment(loader=file_loader,extensions=['jinja2.ext.loopcontrols', 'jinja2.ext.do'])
         self.template = self.env.get_template('body.py')#On ouvre le template
         self.output = self.template.render()#On remplace les champs du template
         self.saving_file.write(self.output)
@@ -38,19 +38,29 @@ class ParserWriter(Visitor):
         #Template for testMethod()
         to_test=[]#To generate the list of char
         to_call=[]#To generate the calling of the others testMethod()
-        flag=False
-        if self.to_generate[1]=="opt-begin" or self.to_generate[1]=="or-begin":#While it's an optionnal seq or a OR seq we add it into the two previous list.
-            flag=True
+        flag=0
+        flag1=True
+        #if self.to_generate[1]=="opt-begin" or self.to_generate[1]=="or-begin":#While it's an optionnal seq or a OR seq we add it into the two previous list.
+            #flag=1
+        #print("(------------) ",id.value.capitalize())
         for i in range(len(self.to_generate)-1):
-            if self.to_generate[i+1][1]==1:#It's a string
+            if self.to_generate[i+1]=="opt-begin" or self.to_generate[i+1]=="or-begin":
+                flag+=1
+            #print(flag,self.to_generate[i+1])
+            if self.to_generate[i+1][1]==1 and flag<=1 and flag1:#It's a string
                 to_test.append(self.to_generate[i+1][0][1:-1])
-                if flag==False: break
-            elif self.to_generate[i+1][1]==0:#It's an identifier
+                flag1=False
+            elif self.to_generate[i+1][1]==0 and flag<=1 and flag1:#It's an identifier
                 to_call.append(self.to_generate[i+1][0])
-                if flag==False: break
+                flag1=False
+            if (self.to_generate[i+1]=="or" or self.to_generate[i+1]=="opt-end") and flag==1:
+                flag1=True
+            if flag==0 and flag1==False:
+                break
             if self.to_generate[i+1]=="opt-end" or self.to_generate[i+1]=="or-end":
-                flag=False
-                
+                flag+=-1
+
+
         self.template = self.env.get_template('testmethod.py')
         self.output=self.template.render(name=id.value.capitalize(),string_list=to_test,dependance_list=to_call)
         self.saving_file.write(self.output)
@@ -65,7 +75,8 @@ class ParserWriter(Visitor):
             definition.accept(self,definition)
             self.to_generate.append("or")
         self.to_generate=self.to_generate[0:-1]
-        self.to_generate.append("or-end")
+        if len(definitions.definitions)>1:
+            self.to_generate.append("or-end")
 
     def visitTerminalStringSQuote(self,terminalStringSQuote):
         self.to_generate.append((terminalStringSQuote.value,1))#1=Expected , 0=For Parsing

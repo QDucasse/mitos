@@ -3,6 +3,7 @@
         next=self.show_next().kind
         testing_list={{string_list}}
         test=(next in testing_list)
+        if (test): return(test)
         {%- for d in dependance_list -%}{#For each element we call the appropriated test method#}
         test=(test or self.test{{d}}()) 
         {%- endfor %}

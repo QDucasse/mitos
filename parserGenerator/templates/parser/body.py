@@ -82,5 +82,20 @@ class Parser:
             else:
                 result.append(token)
         return result
+
+    def remove_comments_whitespace(self):
+        '''
+        Removes the comments and the whitespaces from the token list
+        ---
+        Args:    None
+        Return : None
+        '''
+        result = []
+        for token in self.tokens:
+            if token.kind == 'COMMENT' or token.value==" ":
+                pass
+            else:
+                result.append(token)
+        return result
         
 

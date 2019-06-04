@@ -82,6 +82,21 @@ class Parser:
             else:
                 result.append(token)
         return result
+
+    def remove_comments_whitespace(self):
+        '''
+        Removes the comments and the whitespaces from the token list
+        ---
+        Args:    None
+        Return : None
+        '''
+        result = []
+        for token in self.tokens:
+            if token.kind == 'COMMENT' or token.value==" ":
+                pass
+            else:
+                result.append(token)
+        return result
         
 
     def parseProgram(self):
@@ -97,9 +112,7 @@ class Parser:
             self.expect(";")
             self.parseWhitespace()
             
-            
         self.expect('END.')
-        
         self.indentator.dedent()
 
 
@@ -107,6 +120,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=['PROGRAM']
         test=(next in testing_list)
+        if (test): return(test)
         return(test)
 
 
@@ -118,9 +132,8 @@ class Parser:
                 self.parseAlphabeticcharacter()
             elif(self.testDigit()):
                 self.parseDigit()
+                
             
-            
-        
         self.indentator.dedent()
 
 
@@ -128,6 +141,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=[]
         test=(next in testing_list)
+        if (test): return(test)
         test=(test or self.testAlphabeticcharacter())
         return(test)
 
@@ -137,13 +151,10 @@ class Parser:
         if(self.show_next().kind == "-"):
             self.expect("-")
             
-            
         self.parseDigit()
         while(self.testDigit()):
             self.parseDigit()
             
-            
-        
         self.indentator.dedent()
 
 
@@ -151,6 +162,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=['-']
         test=(next in testing_list)
+        if (test): return(test)
         test=(test or self.testDigit())
         return(test)
 
@@ -161,9 +173,7 @@ class Parser:
         while(self.testAllcharacters()):
             self.parseAllcharacters()
             
-            
         self.expect('"')
-        
         self.indentator.dedent()
 
 
@@ -171,6 +181,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=['"']
         test=(next in testing_list)
+        if (test): return(test)
         return(test)
 
 
@@ -184,8 +195,7 @@ class Parser:
             self.parseIdentifier()
         elif(self.testString()):
             self.parseString()
-        
-        
+            
         self.indentator.dedent()
 
 
@@ -193,6 +203,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=[]
         test=(next in testing_list)
+        if (test): return(test)
         test=(test or self.testIdentifier())
         return(test)
 
@@ -251,7 +262,7 @@ class Parser:
             self.expect("Y")
         elif(self.show_next().kind == "Z"):
             self.expect("Z")
-        
+            
         self.indentator.dedent()
 
 
@@ -259,6 +270,7 @@ class Parser:
         next=self.show_next().kind
         testing_list=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
         test=(next in testing_list)
+        if (test): return(test)
         return(test)
 
 
@@ -284,7 +296,7 @@ class Parser:
             self.expect("8")
         elif(self.show_next().kind == "9"):
             self.expect("9")
-        
+            
         self.indentator.dedent()
 
 
@@ -292,6 +304,145 @@ class Parser:
         next=self.show_next().kind
         testing_list=['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         test=(next in testing_list)
+        if (test): return(test)
+        return(test)
+
+
+    def parseAllalphabeticcharacter(self):
+        self.indentator.indent('Parsing Allalphabeticcharacter')
+        if(self.show_next().kind == "A"):
+            self.expect("A")
+        elif(self.show_next().kind == "B"):
+            self.expect("B")
+        elif(self.show_next().kind == "C"):
+            self.expect("C")
+        elif(self.show_next().kind == "D"):
+            self.expect("D")
+        elif(self.show_next().kind == "E"):
+            self.expect("E")
+        elif(self.show_next().kind == "F"):
+            self.expect("F")
+        elif(self.show_next().kind == "G"):
+            self.expect("G")
+        elif(self.show_next().kind == "H"):
+            self.expect("H")
+        elif(self.show_next().kind == "I"):
+            self.expect("I")
+        elif(self.show_next().kind == "J"):
+            self.expect("J")
+        elif(self.show_next().kind == "K"):
+            self.expect("K")
+        elif(self.show_next().kind == "L"):
+            self.expect("L")
+        elif(self.show_next().kind == "M"):
+            self.expect("M")
+        elif(self.show_next().kind == "N"):
+            self.expect("N")
+        elif(self.show_next().kind == "O"):
+            self.expect("O")
+        elif(self.show_next().kind == "P"):
+            self.expect("P")
+        elif(self.show_next().kind == "Q"):
+            self.expect("Q")
+        elif(self.show_next().kind == "R"):
+            self.expect("R")
+        elif(self.show_next().kind == "S"):
+            self.expect("S")
+        elif(self.show_next().kind == "T"):
+            self.expect("T")
+        elif(self.show_next().kind == "U"):
+            self.expect("U")
+        elif(self.show_next().kind == "V"):
+            self.expect("V")
+        elif(self.show_next().kind == "W"):
+            self.expect("W")
+        elif(self.show_next().kind == "X"):
+            self.expect("X")
+        elif(self.show_next().kind == "Y"):
+            self.expect("Y")
+        elif(self.show_next().kind == "Z"):
+            self.expect("Z")
+        elif(self.show_next().kind == "a"):
+            self.expect("a")
+        elif(self.show_next().kind == "b"):
+            self.expect("b")
+        elif(self.show_next().kind == "c"):
+            self.expect("c")
+        elif(self.show_next().kind == "d"):
+            self.expect("d")
+        elif(self.show_next().kind == "e"):
+            self.expect("e")
+        elif(self.show_next().kind == "f"):
+            self.expect("f")
+        elif(self.show_next().kind == "g"):
+            self.expect("g")
+        elif(self.show_next().kind == "h"):
+            self.expect("h")
+        elif(self.show_next().kind == "i"):
+            self.expect("i")
+        elif(self.show_next().kind == "j"):
+            self.expect("j")
+        elif(self.show_next().kind == "k"):
+            self.expect("k")
+        elif(self.show_next().kind == "l"):
+            self.expect("l")
+        elif(self.show_next().kind == "m"):
+            self.expect("m")
+        elif(self.show_next().kind == "n"):
+            self.expect("n")
+        elif(self.show_next().kind == "o"):
+            self.expect("o")
+        elif(self.show_next().kind == "p"):
+            self.expect("p")
+        elif(self.show_next().kind == "q"):
+            self.expect("q")
+        elif(self.show_next().kind == "r"):
+            self.expect("r")
+        elif(self.show_next().kind == "s"):
+            self.expect("s")
+        elif(self.show_next().kind == "t"):
+            self.expect("t")
+        elif(self.show_next().kind == "u"):
+            self.expect("u")
+        elif(self.show_next().kind == "v"):
+            self.expect("v")
+        elif(self.show_next().kind == "w"):
+            self.expect("w")
+        elif(self.show_next().kind == "x"):
+            self.expect("x")
+        elif(self.show_next().kind == "y"):
+            self.expect("y")
+        elif(self.show_next().kind == "z"):
+            self.expect("z")
+            
+        self.indentator.dedent()
+
+
+    def testAllalphabeticcharacter(self):
+        next=self.show_next().kind
+        testing_list=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+        test=(next in testing_list)
+        if (test): return(test)
+        return(test)
+
+
+    def parseSpecialcharacter(self):
+        self.indentator.indent('Parsing Specialcharacter')
+        if(self.show_next().kind == "_"):
+            self.expect("_")
+        elif(self.show_next().kind == "!"):
+            self.expect("!")
+        elif(self.show_next().kind == "?"):
+            self.expect("?")
+            
+        self.indentator.dedent()
+
+
+    def testSpecialcharacter(self):
+        next=self.show_next().kind
+        testing_list=['_', '!', '?']
+        test=(next in testing_list)
+        if (test): return(test)
         return(test)
 
 
@@ -301,8 +452,6 @@ class Parser:
             self.expect(" ")
             self.parseWhitespace()
             
-            
-        
         self.indentator.dedent()
 
 
@@ -310,30 +459,33 @@ class Parser:
         next=self.show_next().kind
         testing_list=[' ']
         test=(next in testing_list)
+        if (test): return(test)
         return(test)
 
 
     def parseAllcharacters(self):
         self.indentator.indent('Parsing Allcharacters')
-        if(self.show_next().kind == "[a-zA-Z0-9 \W]"):
-            self.expect("[a-zA-Z0-9 \W]")
-        elif(self.testAlphabeticcharacter()):
-            self.parseAlphabeticcharacter()
+        if(self.testAllalphabeticcharacter()):
+            self.parseAllalphabeticcharacter()
         elif(self.testWhitespace()):
             self.parseWhitespace()
-        
+        elif(self.testSpecialcharacter()):
+            self.parseSpecialcharacter()
+            
         self.indentator.dedent()
 
 
     def testAllcharacters(self):
         next=self.show_next().kind
-        testing_list=['[a-zA-Z0-9 \\W]']
+        testing_list=[]
         test=(next in testing_list)
-        test=(test or self.testAlphabeticcharacter())
+        if (test): return(test)
+        test=(test or self.testAllalphabeticcharacter())
         test=(test or self.testWhitespace())
+        test=(test or self.testSpecialcharacter())
         return(test)
 
-    def parse(self, tokens):
+    def parse(self, tokens, remove_comments_whitespace=False):
         '''
         Main function: launches the parsing operation
         ---
@@ -342,5 +494,8 @@ class Parser:
         '''
         self.tokens = tokens
         #print(self.tokens)
-        self.tokens = self.remove_comments()
+        if remove_comments_whitespace:
+            self.tokens = self.remove_comments_whitespace()
+        else:
+            self.tokens = self.remove_comments()
         self.parseProgram()
