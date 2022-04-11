@@ -40,6 +40,10 @@ class Parser:
         """Peek next token without returning it"""
         return self.peek(1)
 
+    def next_tag_equals(self, tag):
+        """Check if the next token has the given tag WITHOUT popping it"""
+        return self.peek_next().tag == tag
+
     def consume(self):
         """Pop the lexem out of the lexems list and return it"""
         return self.lexems.pop(0)
@@ -62,7 +66,7 @@ class Parser:
     # ======================== #
 
     def parse(self, lexems):
-        """Main function: launches the parsing operation."""
+        """Entry point function: launches the parsing operation."""
         self.lexems = lexems
         self.remove_comments()
         grammar_node = self.parse_grammar()
@@ -71,258 +75,138 @@ class Parser:
     @loginfo(INDENTATOR)
     def parse_grammar(self):
         """grammar = { rule } ;"""
-        # self.indentator.indent('Parsing Grammar...')
         grammar_node = GrammarNode()
         while (len(self.lexems)>0):
             rule_node = self.parse_rule()
             grammar_node.rules.append(rule_node)
-        # self.indentator.dedent()
         return grammar_node
 
     @loginfo(INDENTATOR)
     def parse_rule(self):
         """rule  = identifier, '=', definition, {'|', definition} ';';"""
-        # self.indentator.indent('Parsing Syntax...')
-        # self.indentator.say(Colors.OKGREEN + 'New Syntax' +  Colors.ENDC)
         rule_node = RuleNode()
-        rule_node.identifier = self.expect("IDENTIFIER")
+        rule_node.identifier = self.parse_identifier()
         self.expect("ASSIGN")
         rule_node.definitions.append(self.parse_definition())
-        while(self.peek_next().tag != "TERMINATOR"):
+        while not self.next_tag_equals("TERMINATOR"):
             self.expect("SEPARATOR")
             rule_node.definitions.append(self.parse_definition())
         self.expect("TERMINATOR")
-
-        # self.indentator.say(Colors.OKGREEN + 'End Syntax' +  Colors.ENDC)
-        # self.indentator.dedent()
         return rule_node
 
     @loginfo(INDENTATOR)
     def parse_definition(self):
-        """"""
-        while self.peek_next().tag != "TERMINATOR":
-            self.consume()
+        """definition = term, {',', term};"""
+        definition_node = DefinitionNode()
+        definition_node.terms.append(self.parse_term())
+        while self.next_tag_equals("CONCATENATION"):
+            self.consume() # Remove the ','
+            definition_node.terms.append(self.parse_term())
+        return definition_node
 
+    @loginfo(INDENTATOR)
+    def parse_term(self):
+        """term = factor, ['-', exception];"""
+        term_node = TermNode()
+        term_node.factor = self.parse_factor()
+        if self.next_tag_equals("EXCEPT"):
+            term_node.exception = self.parse_factor()
+        return term_node
 
-    def parseTerm(self):
-        '''
-        Parses a term:
-        Term = Factor, ['-', Exception];  //EBNF
-        '''
-        self.indentator.indent('Parsing Term...')
-        self.indentator.say(Colors.OKGREEN + 'New Term' +  Colors.ENDC)
-        term = Term()
-        factor    = self.parseFactor()
-        term.factor = factor
-        exception = None
-        if self.peek().tag == 'EXCEPT':
-            self.expect('EXCEPT')
-            exception = self.parseException()
-            term.exception = exception
-        self.indentator.say(Colors.OKGREEN + 'End Syntax with values: ' +  Colors.ENDC)
-        self.indentator.dedent()
-        return term
+    @loginfo(INDENTATOR)
+    def parse_factor(self):
+        """factor = [integer, '*'], primary;"""
+        factor_node = FactorNode()
+        if self.next_tag_equals("INTEGER"):
+            factor_node.integer = self.expect("INTEGER")
+            self.expect("REPETITION")
+        factor_node.primary = self.parse_primary()
+        return factor_node
 
-    def parseException(self):
-        '''
-        Parses an Exception:
-        Exception = Factor;  //EBNF
-        '''
-        self.indentator.indent('Parsing Exception')
-        self.indentator.say(Colors.OKGREEN + 'New Exception' +  Colors.ENDC)
-        exception = Exception()
-        factor = self.parseFactor()
-        exception.factor = factor
-        self.indentator.say(Colors.OKGREEN + 'End Exception with value: ' +  Colors.ENDC)
-        self.indentator.dedent()
-        return exception
+    @loginfo(INDENTATOR)
+    def parse_primary(self):
+        """primary = option | repetition | group | special | string | identifier | empty;"""
+        primary_node = PrimaryNode()
+        option_dictionary = {
+            # Group nodes
+            "LBRACKET"   : self.parse_option,
+            "LPAREN"     : self.parse_group,
+            "LBRACE"     : self.parse_repetition,
+            # Special sequences nodes
+            "SPECIAL"    : self.parse_special,
+            "STRING"     : self.parse_string,
+            "INTEGER"    : self.parse_integer,
+            "IDENTIFIER" : self.parse_identifier,
+            # Empry node
+            "TERMINATOR" : self.parse_empty,
+        }
+        # Run the next token's tag into the option dictionary and apply its method
+        primary_node.expression = option_dictionary[self.peek_next().tag]()
+        return primary_node
 
-    def parseFactor(self):
-        '''
-        Parses a factor:
-        Factor = [Integer, '*'], Primary; //EBNF
-        '''
-        self.indentator.indent('Parsing Factor')
-        self.indentator.say(Colors.OKGREEN + 'New Factor' +  Colors.ENDC)
-        factor = Factor()
-        integer = 0
-        factor.integer = integer
-        if self.peek().tag == 'DIGIT':
-            integer = self.parseInteger()
-            factor.integer = integer
-            self.expect('REPETITION')
-        primary = self.parsePrimary()
-        factor.primary = primary
-        self.indentator.say(Colors.OKGREEN + 'End Factor with values:' +  Colors.ENDC)
-        self.indentator.dedent()
-        return factor
+    @loginfo(INDENTATOR)
+    def parse_option(self):
+        """option = '[',  definition, {'|', definition}, ']';"""
+        option_node = OptionNode()
+        self.expect("LBRACKET")
+        option_node.definitions.append(self.parse_definition())
+        while not self.next_tag_equals("RBRACKET"):
+            self.expect("SEPARATOR")
+            option_node.definitions.append(self.parse_definition())
+        self.expect("RBRACKET")
 
-    def parsePrimary(self):
-        '''
-        Parses a primary:
-        Primary = OptionalSeq
-                | RepeatedSeq
-                | GroupedSeq
-                | SpecialSeq
-                | TerminalString
-                | Identifier
-                | Empty;            //EBNF
-        '''
-        self.indentator.indent('Parsing Primary...')
-        self.indentator.say(Colors.OKGREEN + 'New Primary' +  Colors.ENDC)
-        primary = Primary()
-        # A primary can consist of different type of objects and is parsed accordingly
-        if self.peek().tag == 'LBRACKET':
-            optionalSeq = self.parseOptionalSeq()
-            primary.optionalSeq = optionalSeq
-        elif self.peek().tag == 'LBRACE':
-            repeatedSeq = self.parseRepeatedSeq()
-            primary.repeatedSeq = repeatedSeq
-        elif self.peek().tag == 'LPAREN':
-            groupedSeq = self.parseGroupedSeq()
-            primary.groupedSeq = groupedSeq
-        elif self.peek().tag == 'SPECIAL':
-            specialSeq = self.parseSpecialSeq()
-            primary.specialSeq = specialSeq
-        elif self.peek().tag in Parser.TERMINAL_STRING:
-            terminalString = self.parseTerminalString()
-            primary.terminalString = terminalString
-        elif self.peek().tag == 'IDENTIFIER':
-            identifier = self.parseIdentifier()
-            primary.identifier = identifier
-        else:
-            empty = self.parseEmpty()
-            primary.empty = empty
-        self.indentator.say(Colors.OKGREEN + 'End Primary' +  Colors.ENDC)
-        self.indentator.dedent()
-        return primary
+    @loginfo(INDENTATOR)
+    def parse_group(self):
+        """group = '(',  definition, {'|', definition}, ')';"""
+        group_node = GroupNode()
+        self.expect("LPAREN")
+        group_node.definitions.append(self.parse_definition())
+        while not self.next_tag_equals("RPAREN"):
+            self.expect("SEPARATOR")
+            group_node.definitions.append(self.parse_definition())
+        self.expect("RPAREN")
 
-    def parseOptionalSeq(self):
-        '''
-        Parses an optional sequence:
-        OptionalSeq = '[', Definitions, ']';  //EBNF
-        '''
-        self.indentator.indent('Parsing Optional Sequence...')
-        self.indentator.say(Colors.OKGREEN + 'New Optional Sequence' +  Colors.ENDC)
-        optionalSeq = OptionalSeq()
-        self.expect('LBRACKET')
-        definitions = self.parseDefinitions()
-        optionalSeq.definitions = definitions
-        self.expect('RBRACKET')
-        self.indentator.say(Colors.OKGREEN + 'End Optional Sequence')
-        self.indentator.dedent()
-        return optionalSeq
+    @loginfo(INDENTATOR)
+    def parse_repetition(self):
+        """repetition = '{',  definition, {'|', definition}, '}';"""
+        repetition_node = RepetitionNode()
+        self.expect("LBRACE")
+        repetition_node.definitions.append(self.parse_definition())
+        while not self.next_tag_equals("RBRACE"):
+            self.expect("SEPARATOR")
+            repetition_node.definitions.append(self.parse_definition())
+        self.expect("RBRACE")
 
-    def parseRepeatedSeq(self):
-        '''
-        Parses a repeated sequence:
-        RepeatedSeq = '{', Definitions, '}';  //EBNF
-        '''
-        self.indentator.indent('Parsing Repeated Sequence...')
-        self.indentator.say(Colors.OKGREEN + 'Repeated Sequence' +  Colors.ENDC)
-        repeatedSeq = RepeatedSeq()
-        self.expect('LBRACE')
-        definitions = self.parseDefinitions()
-        repeatedSeq.definitions = definitions
-        self.expect('RBRACE')
-        self.indentator.dedent()
-        self.indentator.say(Colors.OKGREEN + 'End Repeated Sequence')
-        return repeatedSeq
+    @loginfo(INDENTATOR)
+    def parse_special(self):
+        """special = REGEXED!"""
+        special_node = SpecialNode()
+        special_node.sequence = self.expect("SPECIAL")
+        return special_node
 
-    def parseGroupedSeq(self):
-        '''
-        Parses a grouped sequence:
-        GroupedSeq = '(', Definitions, ')';  //EBNF
-        '''
-        self.indentator.indent('Parsing Grouped Sequence...')
-        self.indentator.say(Colors.OKGREEN + 'New Group Sequence' +  Colors.ENDC)
-        groupedSeq = GroupedSeq()
-        self.expect('LPAREN')
-        definitions = self.parseDefinitions()
-        groupedSeq.definitions = definitions
-        self.expect('RPAREN')
-        self.indentator.dedent()
-        self.indentator.say(Colors.OKGREEN + 'End Grouped Sequence' +  Colors.ENDC)
-        return groupedSeq
+    @loginfo(INDENTATOR)
+    def parse_string(self):
+        """string = REGEXED!"""
+        string_node = StringNode()
+        string_node.sequence = self.expect("STRING")
+        return string_node
 
-    def parseSpecialSeq(self):
-        '''
-        Parses a special sequence:
-        SpecialSeq = '?', {Character - '?'}, '?';  //EBNF
-        '''
-        self.indentator.indent('Parsing Special Sequence...')
-        self.indentator.say(Colors.OKGREEN + 'New Special Sequence' +  Colors.ENDC)
-        specialSeq = SpecialSeq()
-        token = self.expect('SPECIAL')
-        value = token.value
-        specialSeq.value = value
-        self.indentator.dedent()
-        self.indentator.say(Colors.OKGREEN + 'End Special Sequence')
-        return specialSeq
+    @loginfo(INDENTATOR)
+    def parse_identifier(self):
+        """identifier = REGEXED!"""
+        identifier_node = IdentifierNode()
+        identifier_node.identifier = self.expect("IDENTIFIER")
+        return identifier_node
 
-    def parseTerminalString(self):
-        '''
-        Parses a terminal string:
-        TerminalString = "'", Character - "'", {Character - "'"}, "'"
-                       | '"', Character - '"', {Character - '"'}, '"';  //EBNF
-        '''
-        self.indentator.indent('Parsing Terminal String...')
-        self.indentator.say(Colors.OKGREEN + 'New Terminal String' +  Colors.ENDC)
-        if self.peek().tag == 'SQUOTE':
-            terminalString = TerminalStringSQuote()
-            token = self.expect('SQUOTE')
-            value = token.value
-            terminalString.value = value
-        elif self.peek().tag == 'DQUOTE':
-            terminalString = TerminalStringDQuote()
-            token = self.expect('DQUOTE')
-            value = token.value
-            terminalString.value = value
-        self.indentator.say(Colors.OKGREEN + 'TERMINAL STRING ' + Colors.ENDC + Colors.OKBLUE + value)
-        self.indentator.say(Colors.OKGREEN + 'End Terminal String')
-        self.indentator.dedent()
-        return terminalString
+    @loginfo(INDENTATOR)
+    def parse_integer(self):
+        """integer = REGEXED!"""
+        integer_node = IntegerNode()
+        integer_node.sequence = self.expect("INTEGER")
+        return integer_node
 
-    def parseIdentifier(self):
-        '''
-        Parses an identifier:    (already done in the lexer)
-        Identifier = Letter, {Letter | Digit};  //EBNF
-        '''
-        self.indentator.indent('Parsing Identifier...')
-        self.indentator.say(Colors.OKGREEN + 'New Identifier' +  Colors.ENDC)
-        identifier = Identifier()
-        token = self.expect('IDENTIFIER')
-        value = token.value
-        identifier.value = value
-        self.indentator.say(Colors.OKGREEN + 'IDENTIFIER ' + Colors.ENDC + Colors.OKBLUE + value)
-        self.indentator.say(Colors.OKGREEN + 'End Identifier' + Colors.ENDC)
-        self.indentator.dedent()
-        return identifier
-
-    def parseEmpty(self):
-        '''
-        Parses an empty primary:
-        Empty = ;  //EBNF
-        '''
-        self.indentator.indent('Parsing Empty...')
-        self.indentator.say(Colors.OKGREEN + 'New Empty' +  Colors.ENDC)
-        empty = Empty()
-        self.indentator.dedent()
-        self.indentator.say(Colors.OKGREEN + 'End Empty' +  Colors.ENDC)
-        return empty
-
-    def parseInteger(self):
-        '''
-        Parses an integer:   (already done in the lexer)
-        Integer = Digit, {Digit};  //EBNF
-        '''
-        self.indentator.indent('Parsing Integer...')
-        self.indentator.say(Colors.OKGREEN + 'New Integer' +  Colors.ENDC)
-        integer = Integer()
-        token = self.expect('INTEGER')
-        value = token.value
-        integer.value = value
-        self.indentator.say(Colors.OKGREEN + 'INTEGER ' + Colors.ENDC + Colors.OKBLUE + value)
-        self.indentator.say(Colors.OKGREEN + 'End Integer' +  Colors.ENDC)
-        self.indentator.dedent()
-        return integer
+    @loginfo(INDENTATOR)
+    def parse_empty(self):
+        """empty = ;"""
+        empty_node = EmptyNode()
+        return empty_node
