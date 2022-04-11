@@ -23,9 +23,6 @@ regexExpressions = [
     (r'\|', 'SEPARATOR'),
 
     # Groups
-    (r'\'[^\']*\'',         'SQUOTE'),
-    (r'\"[^\"]*\"',         'DQUOTE'),
-    (r'\?[^\?]*\?',         'SPECIAL'),
     (r'\(',                 'LPAREN'),
     (r'\)',                 'RPAREN'),
     (r'\{',                 'LBRACE'),
@@ -33,9 +30,11 @@ regexExpressions = [
     (r'\[',                 'LBRACKET'),
     (r'\]',                 'RBRACKET'),
 
-    # Identifiers & Integers
-    (r'[a-zA-Z]\w*', 'IDENTIFIER'),
-    (r'\d+',         'INTEGER'),
+    # Special sequences
+    (r'\?[^\?]*\?',       "SPECIAL"),
+    (r'(\'|\").*(\'|\")', "STRING"),
+    (r'[a-zA-Z]\w*',      "IDENTIFIER"),
+    (r'\d+',              "INTEGER")
 ]
 
 
