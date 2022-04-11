@@ -1,8 +1,7 @@
 grammar = { rule };
 rule  = identifier, '=', definition, {'|', definition} ';';
 definition = term, {',', term};
-term = factor, ['-', exception];
-exception = factor;
+term = factor, ['-', factor];
 factor = [integer, '*'], primary;
 primary = option
         | repetition
@@ -11,9 +10,9 @@ primary = option
         | string
         | identifier
         | empty;
-option = '[', definitions, ']';
-repetition = '{', definitions, '}';
-group = '(', definitions, ')';
+option = '[',  definition, {'|', definition}, ']';
+repetition = '{',  definition, {'|', definition}, '}';
+group = '(',  definition, {'|', definition}, ')';
 special = '?', {character - '?'}, '?';
 string = "'", character - "'", {character - "'"}, "'"
        | '"', character - '"', {character - '"'}, '"';
