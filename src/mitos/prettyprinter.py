@@ -8,73 +8,92 @@ Created on Sun Aug 18 20:35:45 2019
 from mitos.visitor import Visitor
 
 class PrettyPrinter(Visitor):
-    '''
-    Pretty printer rendering the ebnf again from the ast
-    Allows checking again if everything went right
-    '''
-    def __init__(self):
-            self.file = ""
+    """Visitor example that displays the source program back"""
 
-    def visitSyntaxRule(self,syntaxRule):
-        id   = syntaxRule.identifier
-        defs = syntaxRule.definitions
-        id.accept(self,id)
-        self.file.write("=")
-        defs.accept(self,defs)
-        self.file.write(";\n")
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.display_string = ""
 
-    def visitDefinitions(self,definitions):
-        # Visits all definitions
-        for definition in definitions.definitions[0:-1]:
-            definition.accept(self,definition)
-            self.file.write("|")
-        definitions.definitions[-1].accept(self,definitions.definitions[-1])
+    def pretty_print(self, ast):
+        self.visit(ast)
+        print(self.display_string)
 
-    def visitDefinition(self,definition):
-        # Visits all terms
-        for term in definition.terms[0:-1]:
-            term.accept(self,term)
-            self.file.write(",")
-        definition.terms[-1].accept(self,definition.terms[-1])
+    def visit_grammar(self, grammar):
+        """grammar = { rule };"""
+        for rule in grammar.rules:
+            self.visit(rule)
 
-    def visitException(self,exception):
-        # Visits the exception
-        self.file.write("-")
-        super().visitException(exception)
+    def visit_rule(self, rule):
+        """rule  = identifier, '=', definition, {'|', definition} ';';"""
+        self.visit(rule.identifier)
+        self.display_string += " = "
+        self.visit(rule.definitions[0])
+        for definition in rule.definitions[1:]:
+            self.display_string += " | "
+            self.visit(definition)
+        self.display_string += ";\n"
 
-    def visitPrimary(self,primary):
-        if primary.optionalSeq != None:
-            self.file.write("[")
-            primary.optionalSeq.accept(self,primary.optionalSeq)
-            self.file.write("]")
-        elif primary.identifier != None:
-            primary.identifier.accept(self,primary.identifier)
-        elif primary.repeatedSeq != None:
-            self.file.write("{")
-            primary.repeatedSeq.accept(self,primary.repeatedSeq)
-            self.file.write("}")
-        elif primary.groupedSeq != None:
-            self.file.write("(")
-            primary.groupedSeq.accept(self,primary.groupedSeq)
-            self.file.write(")")
-        elif primary.specialSeq != None:
-            primary.specialSeq.accept(self,primary.specialSeq)
-        elif primary.terminalString != None:
-            primary.terminalString.accept(self,primary.terminalString)
-        elif primary.empty != None:
-            primary.empty.accept(self,primary.empty)
+    def visit_definition(self, definition):
+        """definition = term, {',', term};"""
+        self.visit(definition.terms[0])
+        for term in definition.terms[1:]:
+            self.display_string += " , "
+            self.visit(term)
 
-    def visitSpecialSeq(self,specialSeq):
-        self.file.write(specialSeq.value)
+    def visit_term(self, term):
+        """term = factor, ['-', factor];"""
+        self.visit(term.factor)
+        if term.exception is not None:
+            self.display_string += " - "
+            self.visit(term.exception)
 
-    def visitTerminalStringSQuote(self,terminalStringSQuote):
-        self.file.write(" "+terminalStringSQuote.value+" ")
+    def visit_factor(self, factor):
+        """factor = [integer, '*'], primary;"""
+        if factor.integer is not None:
+            self.visit(factor.integer)
+            self.display_string += " * "
+        self.visit(factor.primary)
 
-    def visitTerminalStringDQuote(self,terminalStringDQuote):
-        self.file.write(" "+terminalStringDQuote.value+" ")
+    def visit_primary(self, primary):
+        """primary = option | repetition | group | special | string | identifier | empty;"""
+        self.visit(primary.expression)
 
-    def visitIdentifier(self,identifier):
-        self.file.write(" "+identifier.value+" ")
+    def visit_option(self, option):
+        """option = '[',  definition, {'|', definition}, ']';"""
+        self.visit(option.definitions[0])
+        for definition in option.definitions[1:]:
+            self.display_string += " | "
+            self.visit(definition)
 
-    def visitInteger(self,integer):
-        self.file.write(" "+integer.value+" ")
+    def visit_repetition(self, repetition):
+        """repetition = '{',  definition, {'|', definition}, '}';"""
+        self.visit(repetition.definitions[0])
+        for definition in repetition.definitions[1:]:
+            self.display_string += " | "
+            self.visit(definition)
+
+    def visit_group(self, group):
+        """group = '(',  definition, {'|', definition}, ')';"""
+        self.visit(group.definitions[0])
+        for definition in group.definitions[1:]:
+            self.display_string += " | "
+            self.visit(definition)
+
+    def visit_empty(self, empty):
+        """empty = ;"""
+
+    def visit_special(self, special):
+        """special = REGEXED!"""
+        self.display_string += special.sequence.value
+
+    def visit_identifier(self, identifier):
+        """identifier = REGEXED!"""
+        self.display_string += identifier.identifier.value
+
+    def visit_integer(self, integer):
+        """integer = REGEXED!"""
+        self.display_string += integer.integer.value
+
+    def visit_string(self, string):
+        """string = REGEXED!"""
+        self.display_string += string.string.value

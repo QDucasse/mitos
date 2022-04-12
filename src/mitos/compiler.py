@@ -22,5 +22,3 @@ class Compiler:
         lexems = self.lexer.lex(source_file)
         ast = self.parser.parse(lexems)
         pp = self.pretty_printer.pretty_print(ast)
-        res = self.visitor.visit(ast)
-        return res

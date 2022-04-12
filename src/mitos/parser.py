@@ -24,7 +24,7 @@ class Parser:
     TERMINAL_STRING = [ 'SQUOTE','DQUOTE' ]
     INDENTATOR = Indentator()
 
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=False):
         self.lexems = []
         Parser.INDENTATOR.verbose = verbose
 
@@ -79,6 +79,7 @@ class Parser:
         while (len(self.lexems)>0):
             rule_node = self.parse_rule()
             grammar_node.rules.append(rule_node)
+        print("Parser: analysis successful!")
         return grammar_node
 
     @loginfo(INDENTATOR)
@@ -191,7 +192,7 @@ class Parser:
     def parse_string(self):
         """string = REGEXED!"""
         string_node = StringNode()
-        string_node.sequence = self.expect("STRING")
+        string_node.string = self.expect("STRING")
         return string_node
 
     @loginfo(INDENTATOR)
@@ -205,7 +206,7 @@ class Parser:
     def parse_integer(self):
         """integer = REGEXED!"""
         integer_node = IntegerNode()
-        integer_node.sequence = self.expect("INTEGER")
+        integer_node.integer = self.expect("INTEGER")
         return integer_node
 
     @loginfo(INDENTATOR)
