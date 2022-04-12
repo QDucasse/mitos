@@ -31,10 +31,11 @@ regexExpressions = [
     (r'\]',                 'RBRACKET'),
 
     # Special sequences
-    (r'\?[^\?]*\?',       "SPECIAL"),
-    (r'(\'|\").*(\'|\")', "STRING"),
-    (r'[a-zA-Z]\w*',      "IDENTIFIER"),
-    (r'\d+',              "INTEGER")
+    (r'\?[^\?]*\?',  "SPECIAL"),
+    (r'(\').*?(\')', "STRING"),
+    (r'(\").*?(\")', "STRING"),
+    (r'[a-zA-Z]\w*', "IDENTIFIER"),
+    (r'\d+',         "INTEGER")
 ]
 
 
