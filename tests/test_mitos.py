@@ -3,4 +3,4 @@ from mitos.cli import main
 
 
 def test_main():
-    assert main([]) == 0
+    main(["","grammars/ebnf.ebnf"])
