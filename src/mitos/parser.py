@@ -154,6 +154,7 @@ class Parser:
             self.expect("SEPARATOR")
             option_node.definitions.append(self.parse_definition())
         self.expect("RBRACKET")
+        return option_node
 
     @loginfo(INDENTATOR)
     def parse_group(self):
@@ -165,6 +166,7 @@ class Parser:
             self.expect("SEPARATOR")
             group_node.definitions.append(self.parse_definition())
         self.expect("RPAREN")
+        return group_node
 
     @loginfo(INDENTATOR)
     def parse_repetition(self):
@@ -176,6 +178,7 @@ class Parser:
             self.expect("SEPARATOR")
             repetition_node.definitions.append(self.parse_definition())
         self.expect("RBRACE")
+        return repetition_node
 
     @loginfo(INDENTATOR)
     def parse_special(self):
