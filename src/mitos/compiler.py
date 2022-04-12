@@ -15,7 +15,7 @@ class Compiler:
 
     def __init__(self):
         self.lexer = Lexer()
-        self.parser = Parser()
+        self.parser = Parser(verbose=True)
         self.pretty_printer = PrettyPrinter()
         self.visitor = Visitor()
 
@@ -23,3 +23,4 @@ class Compiler:
         lexems = self.lexer.lex(source_file)
         ast = self.parser.parse(lexems)
         self.pretty_printer.pretty_print(ast)
+        self.visitor.visit(ast)

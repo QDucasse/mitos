@@ -75,9 +75,9 @@ class Parser:
         """Removes the comments from the token list by testing their tags."""
         self.lexems = [lexem for lexem in self.lexems if lexem.tag != "COMMENT"]
 
-    # ======================== #
-    #     PARSING FUNCTIONS    #
-    # ======================== #
+    # ========================= #
+    #     PARSING FUNCTIONS     #
+    # ========================= #
 
     def parse(self, lexems):
         """Entry point function: launches the parsing operation."""
