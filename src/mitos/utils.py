@@ -14,6 +14,7 @@ class Indentator:
 
     def __init__(self):
         self.indentation = 0
+        self.verbose = False
 
     def indent(self):
         self.indentation += self.INDENT
@@ -21,14 +22,17 @@ class Indentator:
     def dedent(self):
         self.indentation -= self.INDENT
 
-    def say(self, text):
+    def prepare_string(self, text):
         output = ''
         if (self.indentation > 0):
             for i in range(1, self.indentation):
                 output += ' '
         output += text
+        return output
+
+    def say(self, text):
         if self.verbose:
-            print(output)
+            print(self.prepare_string(text))
 
 
 def loginfo(indentator):
