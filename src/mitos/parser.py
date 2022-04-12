@@ -8,10 +8,22 @@ Created on Sun Aug 18 20:35:45 2019
 
 import sys
 
-from mitos.utils import Indentator, loginfo
-from mitos.ast import GrammarNode, RuleNode, DefinitionNode, TermNode, FactorNode, \
-                      PrimaryNode, OptionNode, RepetitionNode, GroupNode, EmptyNode, \
-                      SpecialNode, IdentifierNode, IntegerNode, StringNode
+from mitos.ast import DefinitionNode
+from mitos.ast import EmptyNode
+from mitos.ast import FactorNode
+from mitos.ast import GrammarNode
+from mitos.ast import GroupNode
+from mitos.ast import IdentifierNode
+from mitos.ast import IntegerNode
+from mitos.ast import OptionNode
+from mitos.ast import PrimaryNode
+from mitos.ast import RepetitionNode
+from mitos.ast import RuleNode
+from mitos.ast import SpecialNode
+from mitos.ast import StringNode
+from mitos.ast import TermNode
+from mitos.utils import Indentator
+from mitos.utils import loginfo
 
 
 class Parser:

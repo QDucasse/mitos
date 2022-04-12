@@ -7,8 +7,8 @@ Created on Fri Mar 25 18:58:32 2022
 
 from mitos.lexer import Lexer
 from mitos.parser import Parser
-from mitos.visitor import Visitor
 from mitos.prettyprinter import PrettyPrinter
+from mitos.visitor import Visitor
 
 
 class Compiler:
