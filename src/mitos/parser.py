@@ -35,7 +35,6 @@ class Parser:
     Note: The comments display extracts of the EBNF's EBNF grammar and those lines are followed by "//EBNF".
     You can refer to the full grammar in grammars/ebnf.ebnf
     """
-    TERMINAL_STRING = ['SQUOTE', 'DQUOTE']
     INDENTATOR = Indentator()
 
     def __init__(self, verbose=False):
@@ -125,6 +124,7 @@ class Parser:
         term_node = TermNode()
         term_node.factor = self.parse_factor()
         if self.next_tag_equals("EXCEPT"):
+            self.consume()
             term_node.exception = self.parse_factor()
         return term_node
 
