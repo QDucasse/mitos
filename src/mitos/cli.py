@@ -18,6 +18,7 @@ import sys
 
 from mitos.compiler import Compiler
 
+
 def main(argv=sys.argv):
     """
     Args:
@@ -33,16 +34,16 @@ def main(argv=sys.argv):
         sys.exit(1)
     file_name = argv[1]
     try:
-      with open(file_name, 'r') as file:
-          file_data = file.readlines()
+        with open(file_name, 'r') as file:
+            file_data = file.readlines()
     except FileNotFoundError:
-      print('Error: test file {} does not exist'.format(file_name))
-      sys.exit()
+        print('Error: test file {} does not exist'.format(file_name))
+        sys.exit()
 
-     # The compiler will:
-     #  - lex the raw data through the lexer and generate lexems
-     #  - parse the lexems through the parser and generate an AST
-     #  - visit the AST through a visitor and generate an output
+    # The compiler will:
+    #  - lex the raw data through the lexer and generate lexems
+    #  - parse the lexems through the parser and generate an AST
+    #  - visit the AST and pretty print the source code back
 
     compiler = Compiler()
-    res = compiler.compile(file_data)
+    compiler.compile(file_data)

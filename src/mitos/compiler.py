@@ -5,10 +5,11 @@ Created on Fri Mar 25 18:58:32 2022
 @author: Quentin Ducasse
 """
 
-from mitos.lexer         import Lexer
-from mitos.parser        import Parser
-from mitos.visitor       import Visitor
+from mitos.lexer import Lexer
+from mitos.parser import Parser
+from mitos.visitor import Visitor
 from mitos.prettyprinter import PrettyPrinter
+
 
 class Compiler:
 
@@ -21,4 +22,4 @@ class Compiler:
     def compile(self, source_file):
         lexems = self.lexer.lex(source_file)
         ast = self.parser.parse(lexems)
-        pp = self.pretty_printer.pretty_print(ast)
+        self.pretty_printer.pretty_print(ast)

@@ -7,6 +7,7 @@ Created on Sun Aug 18 20:35:45 2019
 
 import functools
 
+
 class Indentator:
     """An indentator simplifying information display with automated tabulations."""
     INDENT = 2

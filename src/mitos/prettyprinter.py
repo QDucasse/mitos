@@ -7,6 +7,7 @@ Created on Sun Aug 18 20:35:45 2019
 
 from mitos.visitor import Visitor
 
+
 class PrettyPrinter(Visitor):
     """Visitor example that displays the source program back"""
 

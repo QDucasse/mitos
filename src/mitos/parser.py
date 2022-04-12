@@ -8,8 +8,10 @@ Created on Sun Aug 18 20:35:45 2019
 
 import sys
 
-from mitos.ast   import *
-from mitos.utils import Indentator, Colors, loginfo
+from mitos.utils import Indentator, loginfo
+from mitos.ast import GrammarNode, RuleNode, DefinitionNode, TermNode, FactorNode, \
+                      PrimaryNode, OptionNode, RepetitionNode, GroupNode, EmptyNode, \
+                      SpecialNode, IdentifierNode, IntegerNode, StringNode
 
 
 class Parser:
@@ -21,7 +23,7 @@ class Parser:
     Note: The comments display extracts of the EBNF's EBNF grammar and those lines are followed by "//EBNF".
     You can refer to the full grammar in grammars/ebnf.ebnf
     """
-    TERMINAL_STRING = [ 'SQUOTE','DQUOTE' ]
+    TERMINAL_STRING = ['SQUOTE', 'DQUOTE']
     INDENTATOR = Indentator()
 
     def __init__(self, verbose=False):
@@ -59,7 +61,7 @@ class Parser:
 
     def remove_comments(self):
         """Removes the comments from the token list by testing their tags."""
-        self.lexems = [lexem for lexem in self.lexems if lexem.tag!="COMMENT"]
+        self.lexems = [lexem for lexem in self.lexems if lexem.tag != "COMMENT"]
 
     # ======================== #
     #     PARSING FUNCTIONS    #
@@ -76,7 +78,7 @@ class Parser:
     def parse_grammar(self):
         """grammar = { rule } ;"""
         grammar_node = GrammarNode()
-        while (len(self.lexems)>0):
+        while (len(self.lexems) > 0):
             rule_node = self.parse_rule()
             grammar_node.rules.append(rule_node)
         print("Parser: analysis successful!")
@@ -101,7 +103,7 @@ class Parser:
         definition_node = DefinitionNode()
         definition_node.terms.append(self.parse_term())
         while self.next_tag_equals("CONCATENATION"):
-            self.consume() # Remove the ','
+            self.consume()  # Remove the ','
             definition_node.terms.append(self.parse_term())
         return definition_node
 
@@ -130,16 +132,16 @@ class Parser:
         primary_node = PrimaryNode()
         option_dictionary = {
             # Group nodes
-            "LBRACKET"   : self.parse_option,
-            "LPAREN"     : self.parse_group,
-            "LBRACE"     : self.parse_repetition,
+            "LBRACKET":   self.parse_option,
+            "LPAREN":     self.parse_group,
+            "LBRACE":     self.parse_repetition,
             # Special sequences nodes
-            "SPECIAL"    : self.parse_special,
-            "STRING"     : self.parse_string,
-            "INTEGER"    : self.parse_integer,
-            "IDENTIFIER" : self.parse_identifier,
+            "SPECIAL":    self.parse_special,
+            "STRING":     self.parse_string,
+            "INTEGER":    self.parse_integer,
+            "IDENTIFIER": self.parse_identifier,
             # Empry node
-            "TERMINATOR" : self.parse_empty,
+            "TERMINATOR": self.parse_empty,
         }
         # Run the next token's tag into the option dictionary and apply its method
         primary_node.expression = option_dictionary[self.peek_next().tag]()

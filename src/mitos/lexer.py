@@ -55,8 +55,8 @@ class Lexem(object):
         Tuple to point out the lexem in the input file (line number, position)
     '''
     def __init__(self, tag, value, position):
-        self.tag      = tag
-        self.value    = value
+        self.tag = tag
+        self.value = value
         self.position = position
 
     def __repr__(self):

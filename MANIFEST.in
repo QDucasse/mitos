@@ -16,5 +16,6 @@ include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 
+recursive-include grammars *.ebnf
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

@@ -7,8 +7,10 @@ Created on Sun Aug 18 20:35:45 2019
 
 import re
 
+
 def empty_if_none(value):
     return value if value is not None else []
+
 
 class BaseNode:
     def accept(self, visitor):
