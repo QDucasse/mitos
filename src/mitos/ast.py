@@ -7,9 +7,10 @@ Created on Sun Aug 18 20:35:45 2019
 
 import re
 
-from mitos.utils import Indentator, Colors
+from mitos.utils import Indentator
 
 INDENTATOR = Indentator()
+
 
 def empty_if_none(value):
     return value if value is not None else []
@@ -70,7 +71,6 @@ class DefinitionNode(BaseNode):
         return display_string
 
 
-
 class TermNode(BaseNode):
     """term = factor, ['-', factor];"""
     def __init__(self, factor=None, exception=None):
@@ -78,7 +78,8 @@ class TermNode(BaseNode):
         self.exception = exception
 
     def __str__(self):
-        display_string = INDENTATOR.prepare_string(self.__class__.__name__ + "({} {})".format(str(self.factor), "" if self.exception is None else str(self.exception)))
+        args_string = "({} {})".format(str(self.factor), "" if self.exception is None else str(self.exception))
+        display_string = INDENTATOR.prepare_string(self.__class__.__name__ + args_string)
         return display_string
 
 
@@ -89,7 +90,8 @@ class FactorNode(BaseNode):
         self.primary = primary
 
     def __str__(self):
-        display_string = self.__class__.__name__ + "({} {})".format("" if self.integer is None else str(self.integer) + " * ", str(self.primary))
+        args_string = "({} {})".format("" if self.integer is None else str(self.integer) + " * ", str(self.primary))
+        display_string = self.__class__.__name__ + args_string
         return display_string
 
 
@@ -130,6 +132,7 @@ class RepetitionNode(BaseNode):
         display_string += INDENTATOR.prepare_string(")")
         INDENTATOR.dedent()
         return display_string
+
 
 class GroupNode(BaseNode):
     """group = '(',  definition, {'|', definition}, ')';"""
