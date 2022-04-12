@@ -1,16 +1,13 @@
 (* Pascal-like programming language grammar that only allows assignments (taken from wikipedia https://www.wikiwand.com/en/Extended_Backus%E2%80%93Naur_form)*)
-program = 'PROGRAM', whitespace, identifier, whitespace,
-          'BEGIN', whitespace,
-          { assignment, ";", whitespace },
-          'END.' ;
+program = 'PROGRAM', identifier, 'BEGIN', { assignment }, 'END.' ;
+assignment = identifier , ":=" , ( number | identifier | string ), ";";
 identifier = letter, { letter | digit } ;
 number = [ "-" ], digit, { digit } ;
-string = '"' , { (character | symbol) - '"' }, '"' ;
-assignment = identifier , ":=" , ( number | identifier | string ) ;
+string = '"' , { character | symbol - '"' }, '"' ;
 letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
-                     | "H" | "I" | "J" | "K" | "L" | "M" | "N"
-                     | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
-                     | "V" | "W" | "X" | "Y" | "Z" ;
+         | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+         | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+         | "V" | "W" | "X" | "Y" | "Z" ;
 digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 symbol = "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
        | "'" | '"' | "=" | "|" | "." | "," | ";" | "_" ;
