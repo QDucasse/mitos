@@ -30,6 +30,7 @@ def main(argv=sys.argv):
     """
     if len(argv) != 2:
         print("Error: Please provide a file to process.")
+        sys.exit(1)
     file_name = argv[1]
     try:
       with open(file_name, 'r') as file:
