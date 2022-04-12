@@ -5,6 +5,7 @@ Created on Sun Aug 18 20:35:45 2019
 @author: Quentin Ducasse & Kevin Bedin
 """
 
+import re
 
 def empty_if_none(value):
     return value if value is not None else []
@@ -13,11 +14,11 @@ class BaseNode:
     def accept(self, visitor):
         """Meta-defining the accept method for the subclasses"""
         # Formatting the name
-        class_name_camel_case = self.__class__.__name__
+        class_name_camel_case = self.__class__.__name__[:-4]
         class_name_snake_case = re.sub(r'(?<!^)(?=[A-Z])', '_', class_name_camel_case).lower()
         method_name = getattr(visitor, "visit_" + class_name_snake_case)
         # Casting the visit<class_name> method on the visitor
-        method_name(visitor)
+        method_name(self)
 
 
 class GrammarNode(BaseNode):
@@ -27,7 +28,7 @@ class GrammarNode(BaseNode):
 
 
 class RuleNode(BaseNode):
-    """rule = identifier , "=" , expression , ";" ;"""
+    """rule  = identifier, '=', definition, {'|', definition} ';';"""
     def __init__(self, identifier=None, definitions=None):
         self.identifier = identifier
         self.definitions = empty_if_none(definitions)
@@ -40,7 +41,7 @@ class DefinitionNode(BaseNode):
 
 
 class TermNode(BaseNode):
-    """term = factor, ['-', exception];"""
+    """term = factor, ['-', factor];"""
     def __init__(self, factor=None, exception=None):
         self.factor = factor
         self.exception = exception
@@ -48,7 +49,7 @@ class TermNode(BaseNode):
 
 class FactorNode(BaseNode):
     """factor = [integer, '*'], primary;"""
-    def __init(self, integer=None, primary=None):
+    def __init__(self, integer=None, primary=None):
         self.integer = integer
         self.primary = primary
 
