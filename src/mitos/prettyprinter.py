@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Pretty printer that prints back the source code from the AST (PoC visitor)
 @author: Quentin Ducasse & Kevin Bedin
 """
 

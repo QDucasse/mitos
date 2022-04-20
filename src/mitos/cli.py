@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Module that contains the command line app.
 
@@ -13,7 +14,10 @@ Why does this file exist, and why not put this in __main__?
     there's no ``mitos.__main__`` in ``sys.modules``.
 
   Also see (1) from http://click.pocoo.org/5/setuptools/#setuptools-integration
+@author: Quentin Ducasse
 """
+
+
 import sys
 
 from mitos.compiler import Compiler
@@ -46,4 +50,5 @@ def main(argv=sys.argv):
     #  - visit the AST and pretty print the source code back
 
     compiler = Compiler()
-    compiler.compile(file_data)
+    res = compiler.compile(file_data)
+    print(res)

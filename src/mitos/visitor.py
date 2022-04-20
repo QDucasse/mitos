@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Visitor example
 @author: Quentin Ducasse & Kevin Bedin
 """
-
 
 class Visitor:
     """Placeholder example of a visitor, pretty print"""

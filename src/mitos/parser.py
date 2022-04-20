@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Parser that uses lexems to generate an AST
 @author: Quentin Ducasse & Kevin Bedin
 """
 

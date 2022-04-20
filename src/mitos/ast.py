@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Nodes for the AST
 @author: Quentin Ducasse & Kevin Bedin
 """
+
 
 import re
 
@@ -78,7 +78,7 @@ class TermNode(BaseNode):
         self.exception = exception
 
     def __str__(self):
-        args_string = "({} {})".format(str(self.factor), "" if self.exception is None else str(self.exception))
+        args_string = "({}{})".format(str(self.factor), "" if self.exception is None else "-" + str(self.exception))
         display_string = INDENTATOR.prepare_string(self.__class__.__name__ + args_string)
         return display_string
 
@@ -90,7 +90,7 @@ class FactorNode(BaseNode):
         self.primary = primary
 
     def __str__(self):
-        args_string = "({} {})".format("" if self.integer is None else str(self.integer) + " * ", str(self.primary))
+        args_string = "({}{})".format("" if self.integer is None else str(self.integer) + " * ", str(self.primary))
         display_string = self.__class__.__name__ + args_string
         return display_string
 

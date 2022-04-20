@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Utilities, indentator, log decorator and colors
 @author: Quentin Ducasse & Kevin Bedin
 """
-
 import functools
 
 

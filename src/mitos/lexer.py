@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug 18 20:35:45 2019
-
+Lexer that transforms raw source code to lexems
 @author: Quentin Ducasse & Kevin Bedin
 """
 
@@ -9,7 +8,7 @@ Created on Sun Aug 18 20:35:45 2019
 import re
 import sys
 
-regexExpressions = [
+regex_expressions = [
     # Comments and whitespaces
     (r'\(\*[\s\S]*?\*\)', 'COMMENT'),
     (r'[ \n\t]+', None),
@@ -39,8 +38,8 @@ regexExpressions = [
 ]
 
 
-class Lexem(object):
-    '''
+class Lexem:
+    """
     Our token definition:
     lexem (tag and value) + position in the program raw text
 
@@ -54,7 +53,7 @@ class Lexem(object):
 
     position: integer tuple
         Tuple to point out the lexem in the input file (line number, position)
-    '''
+    """
     def __init__(self, tag, value, position):
         self.tag = tag
         self.value = value
@@ -65,39 +64,30 @@ class Lexem(object):
 
 
 class Lexer:
-    '''
+    """
     Creates a lexem list from raw program text
-    '''
+    """
 
     def __init__(self):
         self.lexems = []
 
-    def lex(self, inputText):
-        '''
-        Main lexer function:
-        Creates a lexem for every detected regular expression
-        The lexems are composed of:
-            - tag
-            - values
-            - position
-        SEE lexem for more info
-        '''
+    def lex(self, input_text):
         # Crawl through the input file
-        for lineNumber, line in enumerate(inputText):
-            lineNumber += 1
+        for line_number, line in enumerate(input_text):
+            line_number += 1
             position = 0
             # Crawl through the line
             while position < len(line):
                 match = None
-                for lexemRegex in regexExpressions:
-                    pattern, tag = lexemRegex
+                for lexem_regex in regex_expressions:
+                    pattern, tag = lexem_regex
                     regex = re.compile(pattern)
                     match = regex.match(line, position)
                     if match:
                         data = match.group(0)
                         # This condition is needed to avoid the creation of whitespace lexems
                         if tag:
-                            lexem = Lexem(tag, data, [lineNumber, position])
+                            lexem = Lexem(tag, data, [line_number, position])
                             self.lexems.append(lexem)
                         # Renew the position
                         position = match.end(0)

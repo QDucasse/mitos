@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 25 18:58:32 2022
-
+Compiler of the project, organizes the passes
 @author: Quentin Ducasse
 """
+
 
 from mitos.lexer import Lexer
 from mitos.parser import Parser
@@ -24,3 +24,4 @@ class Compiler:
         ast = self.parser.parse(lexems)
         self.pretty_printer.pretty_print(ast)
         self.visitor.visit(ast)
+        return ast
